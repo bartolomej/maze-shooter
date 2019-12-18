@@ -1,11 +1,11 @@
-import _ from 'lodash';
+import Game from "./game";
 
-function component() {
-  const element = document.createElement('div');
+(function component() {
+  const container = document.createElement('div');
+  container.style.height = '100vh';
+  container.style.width = '100vw';
 
-  element.innerHTML = _.join(['Hello', 'webpack'], ' ');
+  document.body.appendChild(container);
 
-  return element;
-}
-
-document.body.appendChild(component());
+  const game = new Game(container);
+})();
