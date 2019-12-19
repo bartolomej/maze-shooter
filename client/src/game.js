@@ -1,5 +1,10 @@
-import { Application, Sprite, Graphics } from 'pixi.js';
+import { Application } from 'pixi.js';
 import Maze from "./maze";
+import Player from "./player";
+import { KeyHandler, keys } from "./input";
+
+
+// TODO: http://gameprogrammingpatterns.com/
 
 const config = container => ({
   width: container.offsetWidth,
@@ -14,7 +19,7 @@ export default class Game {
   constructor (container) {
     this.container = container;
     this.state = {};
-
+    this.keyboard = {};
     this.init();
   }
 
@@ -24,29 +29,44 @@ export default class Game {
     this.app.loader
       .add("car.svg")
       .load(() => this.setup());
-
-    window.addEventListener('resize', () => {
-      this.app.renderer.resize(this.container.offsetWidth, this.container.offsetHeight);
-    });
+    this.addEventListeners();
   };
 
+  addEventListeners () {
+    this.keyboard['left'] = new KeyHandler(keys.LEFT);
+    this.keyboard['up'] = new KeyHandler(keys.UP);
+    this.keyboard['right'] = new KeyHandler(keys.RIGHT);
+    this.keyboard['down'] = new KeyHandler(keys.DOWN);
+    // window resize handler
+    window.addEventListener('resize', () => {
+      this.app.renderer.resize(
+        this.container.offsetWidth,
+        this.container.offsetHeight
+      );
+    });
+  }
+
   setup () {
+    const blockSize = 50;
+
     this.state['maze'] = new Maze();
-    this.state['maze'].generate(20, 20);
-    this.state['maze'].draw(this.app.stage, 50);
+    this.state['maze'].generate(18, 18);
+    this.state['maze'].draw(this.app.stage, blockSize);
 
-    this.state['car'] = new Sprite(this.app.loader.resources["car.svg"].texture);
-    this.state['car'].y = 0;
-    this.state['car'].x = 0;
-
-    this.app.stage.addChild(this.state['car']);
+    this.state['player'] = new Player('test');
+    this.state['player'].draw(this.app.stage, blockSize / 5);
 
     this.app.ticker.add(delta => this.gameLoop(delta));
   };
 
   gameLoop (delta) {
-    this.state['car'].x += 1;
-    this.state['car'].y += 1;
+    this.state['player'].move(
+      this.keyboard.up.isDown,
+      this.keyboard.down.isDown,
+      this.keyboard.left.isDown,
+      this.keyboard.right.isDown
+    );
+    this.state['player'].update();
   };
 
 }

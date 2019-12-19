@@ -6,6 +6,7 @@ export default class Maze {
   constructor (onlineMaze = null) {
     this.maze = onlineMaze;
     this.isOnline = !!onlineMaze;
+    this.blockSize = null;
   }
 
   generate (rows, cols) {
@@ -21,6 +22,7 @@ export default class Maze {
   }
 
   draw (stage, blockSize) {
+    this.blockSize = blockSize;
     for (let row of this.maze) {
       for (let block of row) {
         block.draw(blockSize, blockSize, stage);
