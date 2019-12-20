@@ -8,10 +8,12 @@ export const keys = {
 export class KeyHandler {
 
   constructor (value) {
+    // key value
+    this.value = value;
+    // key states
     this.isDown = false;
     this.isUp = true;
-    this.value = value;
-
+    // attach custom event handlers
     this.onDown = undefined;
     this.onRelease = undefined;
 

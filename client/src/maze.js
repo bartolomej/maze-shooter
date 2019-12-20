@@ -10,9 +10,41 @@ export default class Maze {
   }
 
   generate (rows, cols) {
-    if (!this.maze) {
-      this.maze = generate(rows, cols);
+    let stack = [];
+    let grid = this.generateGrid(rows, cols);
+    let current = grid[random(cols)][random(rows)];
+    current.visited = true;
+    stack.push(current);
+    while (stack.length > 0) {
+      let next = current.getRandomNeighbour(grid);
+      if (next) {
+        next.visited = true;
+        stack.push(current);
+        current.removeWall(next);
+        current = next;
+      } else if (stack.length > 0) {
+        current = stack.pop();
+      }
     }
+    this.maze = grid;
+  }
+
+  generateGrid (rows, cols) {
+    let grid = [];
+    for (let i = 0; i < cols; i++) {
+      let row = [];
+      for (let j = 0; j < rows; j++) {
+        row.push(new Block(j, i));
+      }
+      grid.push(row);
+    }
+    return grid;
+  }
+
+  getRandomBlock () {
+    let y = random(this.maze.length);
+    let x = random(this.maze[y].length);
+    return this.maze[y][x];
   }
 
   update () {
@@ -77,6 +109,14 @@ class Block {
     stage.addChild(lines);
   }
 
+  getRandomEmptyWall () {
+    let emptyWalls = [];
+    for (let key of Object.keys(this.walls)) {
+      if (!this.walls[key]) emptyWalls.push(key);
+    }
+    return emptyWalls[random(emptyWalls.length)];
+  }
+
   getRandomNeighbour (grid) {
     let neighbours = [];
     const n = (x, y) => grid[y] ? grid[y][x] : undefined;
@@ -126,37 +166,8 @@ class Block {
   }
 }
 
-export function generate (rows, cols) {
-  let stack = [];
-  let grid = generateGrid(rows, cols);
-  let current = grid[random(cols)][random(rows)];
-  current.visited = true;
-  stack.push(current);
-
-  while (stack.length > 0) {
-    let next = current.getRandomNeighbour(grid);
-    if (next) {
-      next.visited = true;
-      stack.push(current);
-      current.removeWall(next);
-      current = next;
-    } else if (stack.length > 0) {
-      current = stack.pop();
-    }
-  }
-  return grid;
-}
-
-function generateGrid (rows, cols) {
-  let grid = [];
-  for (let i = 0; i < cols; i++) {
-    let row = [];
-    for (let j = 0; j < rows; j++) {
-      row.push(new Block(j, i));
-    }
-    grid.push(row);
-  }
-  return grid;
+function isBetween (value, target, diff) {
+  return value < target + diff && value > target - diff;
 }
 
 function random (max, min = 0) {

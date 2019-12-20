@@ -8,7 +8,9 @@
     "watch": "webpack --watch",
     "build": "webpack",
     "start": "npm run serve && npm run watch",
-    "serve": "webpack-dev-server --open"
+    "serve": "webpack-dev-server --open",
+    "test-after-commit": "git stash && npm run start",
+    "postest-after-commit": "git stash pop"
   },
   "repository": {
     "type": "git",
