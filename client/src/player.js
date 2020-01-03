@@ -1,26 +1,34 @@
 import { Container, Graphics } from 'pixi.js';
 import { KeyHandler, keys } from "./input";
-
+import Bullet from "./bullet";
 
 export default class Player {
 
-  constructor (uid, position, initialDirection = 'RIGHT') {
+  constructor (uid, position, size, initialDirection = 'RIGHT') {
     this.uid = uid;
+    this.size = size;
+    this.tick = 0;
     this.position = position && position.x && position.y ? position : { x: 20, y: 20 };
+    this.rotation = this._getDegreeOrientation(initialDirection);
+    this.bullets = [];
+    this.graphics = null;
+
+    // player coefficients
     this.velocityFactor = 1;
-    this.rotationFactor = 0.05;
-    this.rotation = this.getDegreeOrientation(initialDirection);
-    this.object = null;
+    this.rotationFactor = 0.06;
+    this.shootingFactor = 20;
+
     // support keys as params in the future (for multiple local players)
     this.keyboard = {
       left: new KeyHandler(keys.LEFT),
       right: new KeyHandler(keys.RIGHT),
       up: new KeyHandler(keys.UP),
-      down: new KeyHandler(keys.DOWN)
+      down: new KeyHandler(keys.DOWN),
+      shoot: new KeyHandler(keys.SPACE)
     };
   }
 
-  getDegreeOrientation (direction) {
+  _getDegreeOrientation (direction) {
     switch (direction) {
       case 'TOP':
         return 0;
@@ -58,48 +66,73 @@ export default class Player {
     }
   }
 
-  update () {
+  update (parent) {
     // calculates player position
     this.move();
 
+    // create new bullets on shoot
+    if (
+      this.keyboard.shoot.isDown &&
+      this.tick % this.shootingFactor === 0
+    ) {
+      const bullet = new Bullet(
+        this.position.x,
+        this.position.y,
+        this.rotation
+      );
+      bullet.draw(this.graphics.bullets);
+      this.bullets.push(bullet);
+    }
+
+    for (let bullet of this.bullets) {
+      bullet.update();
+    }
+
     // updates view elements
-    this.object.rotation = this.rotation;
-    this.object.x = this.position.x;
-    this.object.y = this.position.y;
+    this.graphics.player.rotation = this.rotation;
+    this.graphics.player.x = this.position.x;
+    this.graphics.player.y = this.position.y;
+
+    this.tick++;
   }
 
-  draw (stage, size) {
-    const width = size;
-    const height = size * 2;
-    let components = [];
+  draw (stage) {
+    const width = this.size;
+    const height = this.size * 2;
 
-    const player = new Graphics();
-    player.beginFill(0x4287f5);
-    player.drawRect(0, 0, width, height);
-    player.endFill();
-    components.push(player);
+    const body = new Graphics();
+    body.beginFill(0x4287f5);
+    body.drawRect(0, 0, width, height);
+    body.endFill();
 
     const frontMark = new Graphics();
     frontMark.beginFill(0x0000);
     frontMark.drawCircle(width / 2, -2, width / 2);
     frontMark.endFill();
-    components.push(frontMark);
 
     // wrap player components in container
     // to allow rotation and grouping
-    const container = new Container();
-    // add all components as children
-    for (let ele of components) {
-      container.addChild(ele);
-    }
-    container.x = this.position.x;
-    container.y = this.position.y;
-    container.width = width;
-    container.height = height;
-    container.pivot.x = container.width / 2;
-    container.pivot.y = container.height / 2;
+    const player = new Container();
+    player.addChild(body);
+    player.addChild(frontMark);
 
-    this.object = container;
-    stage.addChild(this.object);
+    player.x = this.position.x;
+    player.y = this.position.y;
+    player.width = width;
+    player.height = height;
+    player.pivot.x = player.width / 2;
+    player.pivot.y = player.height / 2;
+
+    const bullets = new Container();
+    bullets.width = stage.width;
+    bullets.height = stage.height;
+
+    const container = new Container();
+    container.addChild(player, bullets);
+
+    this.graphics = { player, bullets };
+
+    stage.addChild(player);
+    stage.addChild(bullets)
   }
 }

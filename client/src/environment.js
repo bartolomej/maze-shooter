@@ -6,7 +6,7 @@ import Player from "./player";
 
 export default class Environment {
 
-  constructor ({ container, blockSize = 50, mazeDimensions = [18, 18] }) {
+  constructor ({ container, blockSize = 50, mazeDimensions = [20, 20] }) {
     this.blockSize = blockSize;
     this.mazeDimensions = mazeDimensions;
     this.container = container;
@@ -16,7 +16,6 @@ export default class Environment {
     this.app.loader
       .add("car.svg")
       .load(() => this.setup());
-    this.addEventListeners();
   }
 
   get pixiConfig () {
@@ -27,13 +26,6 @@ export default class Environment {
       transparent: true,
       resolution: 1
     }
-  }
-
-  addEventListeners () {
-    window.addEventListener('resize', () => {
-      const { offsetWidth, offsetHeight } = this.container;
-      this.app.renderer.resize(offsetWidth, offsetHeight);
-    });
   }
 
   setup () {
@@ -52,8 +44,8 @@ export default class Environment {
       x: (randomBlock.x * this.blockSize) + this.blockSize / 2,
       y: (randomBlock.y * this.blockSize) + this.blockSize / 2
     };
-    let player = new Player('TestPlayer1', playerPosition, playerOrientation);
-    player.draw(this.app.stage, this.blockSize / 4);
+    let player = new Player('TestPlayer1', playerPosition, this.blockSize / 4, playerOrientation);
+    player.draw(this.app.stage);
     this.state['player'] = player;
 
     // start game loop

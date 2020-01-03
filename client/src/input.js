@@ -2,7 +2,8 @@ export const keys = {
   LEFT: 'ArrowLeft',
   RIGHT: 'ArrowRight',
   UP: 'ArrowUp',
-  DOWN: 'ArrowDown'
+  DOWN: 'ArrowDown',
+  SPACE: 'Space'
 };
 
 export class KeyHandler {
@@ -21,7 +22,7 @@ export class KeyHandler {
   }
 
   downHandler (event) {
-    if (event.key === this.value) {
+    if (event.code === this.value) {
       if (this.isDown && this.onDown) this.onDown();
       this.isDown = true;
       this.isUp = false;
@@ -30,7 +31,7 @@ export class KeyHandler {
   }
 
   upHandler (event) {
-    if (event.key === this.value) {
+    if (event.code === this.value) {
       if (this.isDown && this.onRelease) this.onRelease();
       this.isDown = false;
       this.isUp = true;

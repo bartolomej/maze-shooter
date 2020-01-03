@@ -11,7 +11,7 @@ import Environment from "./environment";
 
   document.body.appendChild(container);
 
-  new Environment({
+  window.game = new Environment({
     container,
     mazeDimensions: [10, 10]
   });

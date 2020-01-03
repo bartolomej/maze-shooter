@@ -1,4 +1,4 @@
-import { Graphics } from 'pixi.js';
+import { Graphics, Container } from 'pixi.js';
 
 
 export default class Maze {
@@ -6,7 +6,7 @@ export default class Maze {
   constructor (onlineMaze = null) {
     this.maze = onlineMaze;
     this.isOnline = !!onlineMaze;
-    this.blockSize = null;
+    this.blockSize = 50;
   }
 
   generate (rows, cols) {
@@ -34,7 +34,7 @@ export default class Maze {
     for (let i = 0; i < cols; i++) {
       let row = [];
       for (let j = 0; j < rows; j++) {
-        row.push(new Block(j, i));
+        row.push(new Block(j, i, this.blockSize));
       }
       grid.push(row);
     }
@@ -47,30 +47,46 @@ export default class Maze {
     return this.maze[y][x];
   }
 
+  checkBulletCollision (bullet) {
+    const blockX = Math.floor(bullet.position.x / this.blockSize);
+    const blockY = Math.floor(bullet.position.y / this.blockSize);
+
+    if (
+      blockY < this.maze.length && blockX < this.maze[0].length &&
+      blockY >= 0 && blockX >= 0
+    ) {
+      const currentBlock = this.maze[blockY][blockX];
+      return currentBlock.checkWallCollision(bullet);
+    }
+  }
+
   update () {
     // state update logic if offline mode
     // add weapons on random blocks,...
     // remove random walls,...
   }
 
-  draw (stage, blockSize) {
-    this.blockSize = blockSize;
+  draw (stage) {
+    const container = new Container();
     for (let row of this.maze) {
       for (let block of row) {
-        block.draw(blockSize, blockSize, stage);
+        block.draw(container);
       }
     }
+    stage.addChild(container);
   }
 
 }
 
 class Block {
 
-  constructor (x, y) {
+  constructor (x, y, size) {
     this.x = x;
     this.y = y;
     this.visited = false;
-    this.path = null;
+    this.graphics = null;
+    this.size = size;
+    this.wallWidth = 5;
     this.walls = {
       TOP: true,
       RIGHT: true,
@@ -79,9 +95,66 @@ class Block {
     };
   }
 
-  draw (width, height, stage) {
+  get positionX () {
+    return this.x * this.size;
+  }
+
+  get positionY () {
+    return this.y * this.size;
+  }
+
+  checkWallCollision (bullet) {
+    const { TOP, RIGHT, BOTTOM, LEFT } = this.walls;
+    const { x, y } = bullet.position;
+    const r = bullet.radius;
+
+    if (
+      TOP &&
+      dist(0, y - this.positionY - this.wallWidth) <= r &&
+      y > this.positionY &&
+      x > this.positionX &&
+      x < this.positionX + this.size
+    ) {
+      return 'TOP';
+    }
+
+    if (
+      BOTTOM &&
+      dist(0, y - (this.positionY + this.size - this.wallWidth)) <= r &&
+      y < this.positionY + this.size &&
+      x > this.positionX &&
+      x < this.positionX + this.size
+    ) {
+      return 'BOTTOM';
+    }
+
+    if (
+      LEFT &&
+      dist(x - this.positionX - this.wallWidth, 0) <= r &&
+      x > this.positionX &&
+      y > this.positionY &&
+      y < this.positionY + this.size
+    ) {
+      return 'LEFT';
+    }
+
+    if (
+      RIGHT &&
+      dist(x - (this.positionX + this.size - this.wallWidth), 0) <= r &&
+      x < this.positionX + this.size &&
+      y > this.positionY &&
+      y < this.positionY + this.size
+    ) {
+      return 'RIGHT';
+    }
+  }
+
+  draw (parent) {
+    let width = this.size;
+    let height = this.size;
+
     let lines = new Graphics();
-    lines.lineStyle(5, 0x000000, 1);
+    lines.lineStyle(this.wallWidth, 0x000000, 1);
 
     const lineTo = (addX = 0, addY = 0) => {
       lines.lineTo(this.x * width + addX, this.y * height + addY);
@@ -104,9 +177,9 @@ class Block {
     if (this.walls.LEFT) lineTo(0, 0);
     else moveTo(0, 0);
 
-    this.path = lines;
+    this.graphics = lines;
 
-    stage.addChild(lines);
+    parent.addChild(lines);
   }
 
   getRandomEmptyWall () {
@@ -164,6 +237,10 @@ class Block {
       this.walls.BOTTOM = false;
     }
   }
+}
+
+function dist (dx, dy) {
+  return Math.sqrt(dx ** 2 + dy ** 2);
 }
 
 function isBetween (value, target, diff) {
