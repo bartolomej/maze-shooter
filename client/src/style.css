@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css?family=Prompt:500,700,900&display=swap');
+@import url('https://fonts.googleapis.com/css?family=Prompt:400,500,700,900&display=swap');
 
 * {
     margin: 0;
@@ -25,6 +25,12 @@ button {
     display: flex;
     justify-content: center;
     align-items: center;
+    flex-direction: column;
+}
+
+#setup-screen button {
+    font-weight: bold;
+    font-size: 20px;
 }
 
 #game-modes button {
@@ -85,7 +91,8 @@ button {
     margin: 20px;
     border: 2px solid black;
     padding: 10px;
-    border-radius: 10px;
+    border-radius: 20px;
+    background: white;
 }
 
 .player-setup-row {

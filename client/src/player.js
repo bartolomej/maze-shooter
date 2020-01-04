@@ -11,6 +11,7 @@ export default class Player {
     this.size = size;
     this.color = color;
     this.tick = 0;
+    this.collisions = [];
     this.position = position && position.x && position.y ? position : { x: 20, y: 20 };
     this.rotation = this._getDegreeOrientation(initialDirection);
     this.bullets = [];
@@ -68,7 +69,7 @@ export default class Player {
     }
   }
 
-  update (checkBulletCollision) {
+  update () {
     // calculates player position
     this.move();
 

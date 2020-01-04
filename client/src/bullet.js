@@ -5,7 +5,7 @@ import { Graphics } from 'pixi.js';
 export default class Bullet {
 
   constructor (x, y, angle) {
-    this.radius = 5;
+    this.size = 5;
     this.position = { x, y };
     this.velocityFactor = 2;
     this.velocity = {
@@ -46,7 +46,7 @@ export default class Bullet {
     this.graphics.clear();
     this.graphics.lineStyle(0);
     this.graphics.beginFill(0xDE3249, 1);
-    this.graphics.drawCircle(0, 0, this.radius);
+    this.graphics.drawCircle(0, 0, this.size);
     this.graphics.endFill();
 
     if (parent) {

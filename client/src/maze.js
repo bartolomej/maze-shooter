@@ -3,10 +3,9 @@ import { Graphics, Container } from 'pixi.js';
 
 export default class Maze {
 
-  constructor (onlineMaze = null) {
-    this.maze = onlineMaze;
-    this.isOnline = !!onlineMaze;
-    this.blockSize = 50;
+  constructor (blockSize) {
+    this.maze = null;
+    this.blockSize = blockSize;
   }
 
   generate (rows, cols) {
@@ -106,7 +105,8 @@ class Block {
   checkWallCollision (bullet) {
     const { TOP, RIGHT, BOTTOM, LEFT } = this.walls;
     const { x, y } = bullet.position;
-    const r = bullet.radius;
+    const r = bullet.size;
+    const collisions = [];
 
     if (
       TOP &&
@@ -115,7 +115,7 @@ class Block {
       x > this.positionX &&
       x < this.positionX + this.size
     ) {
-      return 'TOP';
+      collisions.push('TOP');
     }
 
     if (
@@ -125,7 +125,7 @@ class Block {
       x > this.positionX &&
       x < this.positionX + this.size
     ) {
-      return 'BOTTOM';
+      collisions.push('BOTTOM');
     }
 
     if (
@@ -135,7 +135,7 @@ class Block {
       y > this.positionY &&
       y < this.positionY + this.size
     ) {
-      return 'LEFT';
+      collisions.push('LEFT')
     }
 
     if (
@@ -145,8 +145,12 @@ class Block {
       y > this.positionY &&
       y < this.positionY + this.size
     ) {
-      return 'RIGHT';
+      collisions.push('RIGHT');
     }
+
+    // TODO: add collision detection for edge cases (wall edges)
+
+    return collisions;
   }
 
   draw (parent) {

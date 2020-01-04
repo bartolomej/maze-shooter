@@ -1,5 +1,5 @@
 import Game from "./game";
-import { PlayerSetup } from "./setup";
+import { BackgroundAnimation, PlayerSetup, ModalWindow } from "./utils";
 
 
 const getById = id => document.getElementById(id);
@@ -8,9 +8,22 @@ window.players = [];
 
 // register buttons click event listeners
 getById('local-mode-btn').addEventListener('click', localModeHandler);
+getById('online-mode-btn').addEventListener('click', onlineModeHandler);
 getById('play-game-btn').addEventListener('click', playHandler);
 getById('back-to-setup-btn').addEventListener('click', backToSetupHandler);
 getById('exit-game-btn').addEventListener('click', exitHandler);
+
+
+(function () {
+  const container = getById('setup-screen');
+  window.setupScreenAnimation = new BackgroundAnimation(container, 50);
+  setupScreenAnimation.animate();
+})();
+
+function onlineModeHandler (e) {
+  window.modal = new ModalWindow('Online mode not available yet!');
+  window.modal.show();
+}
 
 function localModeHandler () {
   hideSetup();
@@ -33,20 +46,23 @@ function localModeHandler () {
     shoot: 'Enter'
   });
 
+  let lastEvent; // prevent double click event bug
   getById('add-player-btn').addEventListener('click', e => {
-    if (players.length < 4) {
+    if (players.length < 4 && (lastEvent + 50) < e.timeStamp) {
       addPlayer(getById('players'));
     } else {
       // TODO: display message
     }
+    lastEvent = e.timeStamp;
   });
 
   getById('remove-player-btn').addEventListener('click', e => {
-    if (players.length > 2) {
+    if (players.length > 2 && (lastEvent + 50) < e.timeStamp) {
       removePlayer(getById('players'))
     } else {
       // TODO: display message
     }
+    lastEvent = e.timeStamp;
   });
 
   function removePlayer (container) {
@@ -78,7 +94,7 @@ function playHandler () {
 
   window.game = new Game({
     container: getById('game-container'),
-    mazeDimensions: [10, 10],
+    mazeDimensions: [3, 3],
     players: players
   });
 

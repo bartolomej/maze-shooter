@@ -6,7 +6,7 @@ import Player from "./player";
 
 export default class Game {
 
-  constructor ({ container, blockSize = 50, mazeDimensions = [20, 20], players }) {
+  constructor ({ container, blockSize = 80, mazeDimensions = [20, 20], players }) {
     this.blockSize = blockSize;
     this.mazeDimensions = mazeDimensions;
     this.container = container;
@@ -16,10 +16,9 @@ export default class Game {
     };
     this.players = players;
     this.app = new Application(this.pixiConfig);
+    this.app.view.style.background = 'white';
     this.container.appendChild(this.app.view);
-    this.app.loader
-      .add("car.svg")
-      .load(() => this.setup());
+    this.app.loader.load(() => this.setup());
   }
 
   get pixiConfig () {
@@ -40,7 +39,7 @@ export default class Game {
     const [mazeWidth, mazeHeight] = this.mazeDimensions;
 
     // initialize maze
-    let maze = new Maze();
+    let maze = new Maze(this.blockSize);
     maze.generate(mazeWidth, mazeHeight);
     maze.draw(this.app.stage, this.blockSize);
     this.state.maze = maze;
@@ -72,9 +71,11 @@ export default class Game {
   gameLoop (delta) {
     for (let uid in this.state['players']) {
       let player = this.state.players[uid];
+      let wallHit = this.state.maze.checkBulletCollision(player);
+      if (wallHit) console.log(wallHit)
       player.update();
       for (let bullet of player.bullets) {
-        let bounce = this.state.maze.checkBulletCollision(bullet);
+        let bounce = this.state.maze.checkBulletCollision(bullet)[0];
         if (bounce === 'TOP' || bounce === 'BOTTOM') {
           bullet.bounceY();
         }
