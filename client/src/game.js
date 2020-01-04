@@ -11,6 +11,7 @@ export default class Game {
     this.mazeDimensions = mazeDimensions;
     this.container = container;
     this.state = {
+      maze: {},
       players: {}
     };
     this.players = players;
@@ -42,7 +43,7 @@ export default class Game {
     let maze = new Maze();
     maze.generate(mazeWidth, mazeHeight);
     maze.draw(this.app.stage, this.blockSize);
-    this.state['maze'] = maze;
+    this.state.maze = maze;
 
     // initialize players
     for (let p of this.players) {
@@ -57,10 +58,11 @@ export default class Game {
         position: playerPosition,
         initialDirection: playerOrientation,
         size: this.blockSize / 4,
-        keys: p.controls
+        keys: p.controls,
+        color: p.getColor()
       });
       player.draw(this.app.stage);
-      this.state['players'][player.uid] = player;
+      this.state.players[player.uid] = player;
     }
 
     // start game loop
@@ -68,23 +70,18 @@ export default class Game {
   };
 
   gameLoop (delta) {
-
-    for (let player in this.state['players']) {
-      this.state['players'][player].update(this.app.stage);
-      for (let bullet of this.state['players'][player].bullets) {
-        let bounce = this.state['maze'].checkBulletCollision(bullet);
-        if (bounce === 'TOP') {
-          bullet.bounceDown();
+    for (let uid in this.state['players']) {
+      let player = this.state.players[uid];
+      player.update();
+      for (let bullet of player.bullets) {
+        let bounce = this.state.maze.checkBulletCollision(bullet);
+        if (bounce === 'TOP' || bounce === 'BOTTOM') {
+          bullet.bounceY();
         }
-        if (bounce === 'BOTTOM') {
-          bullet.bounceUp();
+        if (bounce === 'LEFT' || bounce === 'RIGHT') {
+          bullet.bounceX();
         }
-        if (bounce === 'LEFT') {
-          bullet.bounceLeft();
-        }
-        if (bounce === 'RIGHT') {
-          bullet.bounceRight();
-        }
+        bullet.update();
       }
     }
   };

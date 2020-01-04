@@ -5,10 +5,11 @@ import uuid from 'uuid/v4';
 
 export default class Player {
 
-  constructor ({uid, name, position, keys, size, initialDirection = 'RIGHT'}) {
+  constructor ({uid, name, position, keys, size, initialDirection = 'RIGHT', color}) {
     this.uid = uid ? uid : uuid();
     this.name = name;
     this.size = size;
+    this.color = color;
     this.tick = 0;
     this.position = position && position.x && position.y ? position : { x: 20, y: 20 };
     this.rotation = this._getDegreeOrientation(initialDirection);
@@ -20,7 +21,6 @@ export default class Player {
     this.rotationFactor = 0.06;
     this.shootingFactor = 20;
 
-    // support keys as params in the future (for multiple local players)
     this.keyboard = {
       left: new KeyHandler(keys.left),
       right: new KeyHandler(keys.right),
@@ -68,7 +68,7 @@ export default class Player {
     }
   }
 
-  update (parent) {
+  update (checkBulletCollision) {
     // calculates player position
     this.move();
 
@@ -86,10 +86,6 @@ export default class Player {
       this.bullets.push(bullet);
     }
 
-    for (let bullet of this.bullets) {
-      bullet.update();
-    }
-
     // updates view elements
     this.graphics.player.rotation = this.rotation;
     this.graphics.player.x = this.position.x;
@@ -99,31 +95,34 @@ export default class Player {
   }
 
   draw (stage) {
-    const width = this.size;
-    const height = this.size * 2;
-
     const body = new Graphics();
-    body.beginFill(0x4287f5);
-    body.drawRect(0, 0, width, height);
+    body.beginFill(this.color);
+    body.drawCircle(0, 0, this.size);
     body.endFill();
 
     const frontMark = new Graphics();
+    frontMark.lineStyle(2, 0x0000);
     frontMark.beginFill(0x0000);
-    frontMark.drawCircle(width / 2, -2, width / 2);
+    frontMark.drawCircle(0, 0, this.size / 3);
     frontMark.endFill();
+    frontMark.position.set(0, 0);
+
+    const line = new Graphics();
+    line.lineStyle(this.size / 4, 0x0000);
+    line.moveTo(0, 0);
+    line.lineTo(0, -this.size);
+    line.endFill();
+    line.position.set(0, 0);
 
     // wrap player components in container
     // to allow rotation and grouping
     const player = new Container();
     player.addChild(body);
     player.addChild(frontMark);
+    player.addChild(line);
 
     player.x = this.position.x;
     player.y = this.position.y;
-    player.width = width;
-    player.height = height;
-    player.pivot.x = player.width / 2;
-    player.pivot.y = player.height / 2;
 
     const bullets = new Container();
     bullets.width = stage.width;

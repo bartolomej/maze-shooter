@@ -1,3 +1,14 @@
+@import url('https://fonts.googleapis.com/css?family=Prompt:500,700,900&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Prompt', sans-serif;
+}
+
 button {
     outline: none;
     background: none;
@@ -49,9 +60,10 @@ button {
 
 #settings-screen #manipulate-players {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     align-items: center;
     justify-content: space-between;
+    margin: 20px;
 }
 
 #settings-screen #manipulate-players button {

@@ -15,19 +15,11 @@ export default class Bullet {
     this.graphics = null;
   }
 
-  bounceUp() {
+  bounceY() {
     this.velocity.y *= -1;
   }
 
-  bounceDown() {
-    this.velocity.y *= -1;
-  }
-
-  bounceLeft() {
-    this.velocity.x *= -1;
-  }
-
-  bounceRight() {
+  bounceX() {
     this.velocity.x *= -1;
   }
 

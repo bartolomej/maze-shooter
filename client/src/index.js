@@ -1,23 +1,37 @@
 import Game from "./game";
+import { PlayerSetup } from "./setup";
+
 
 const getById = id => document.getElementById(id);
 
 window.players = [];
 
-// buttons click event listeners
+// register buttons click event listeners
 getById('local-mode-btn').addEventListener('click', localModeHandler);
 getById('play-game-btn').addEventListener('click', playHandler);
+getById('back-to-setup-btn').addEventListener('click', backToSetupHandler);
 getById('exit-game-btn').addEventListener('click', exitHandler);
-
 
 function localModeHandler () {
   hideSetup();
   showSettings();
 
-  // create default fields for 2 players
+  // create default controls for 2 players
   let playersContainer = document.getElementById('players');
-  addPlayer(playersContainer);
-  addPlayer(playersContainer);
+  addPlayer(playersContainer, {
+    forward: 'KeyW',
+    backward: 'KeyS',
+    left: 'KeyA',
+    right: 'KeyD',
+    shoot: 'Space'
+  });
+  addPlayer(playersContainer, {
+    forward: 'ArrowUp',
+    backward: 'ArrowDown',
+    left: 'ArrowLeft',
+    right: 'ArrowRight',
+    shoot: 'Enter'
+  });
 
   getById('add-player-btn').addEventListener('click', e => {
     if (players.length < 4) {
@@ -37,28 +51,26 @@ function localModeHandler () {
 
   function removePlayer (container) {
     const player = players.pop();
-    container.removeChild(player.element);
+    container.removeChild(player.domElement);
   }
 
-  function addPlayer (container) {
-    const player = {
-      name: `player${players.length}`,
-      element: generatePlayerSetupElement(players.length),
-      controls: { forward: null, backward: null, left: null, right: null, shoot: null }
-    };
-    container.appendChild(player.element);
+  function addPlayer (container, controls) {
+    const player = new PlayerSetup(players.length, controls);
+    container.appendChild(player.domElement);
     players.push(player);
   }
 }
 
 function playHandler () {
   for (let player of players) {
-    for (let key in player.controls) {
-      if (player.controls[key] == null) {
-        alert(`${key} key is not selected for ${player.name}`);
-        return;
-      }
+    let invalidField = player.validate();
+    if (invalidField) {
+      alert(`${invalidField} key is not selected for ${player.name}`);
     }
+  }
+
+  for (let player of players) {
+    player.destroy();
   }
 
   hideSettings();
@@ -75,58 +87,24 @@ function playHandler () {
   document.getElementById('players').innerHTML = '';
 }
 
+function backToSetupHandler () {
+  for (let player of players) {
+    player.destroy();
+  }
+
+  // reset setup state
+  window.players = [];
+  document.getElementById('players').innerHTML = '';
+
+  hideSettings();
+  showSetup();
+}
+
 function exitHandler () {
   window.game.destroy();
   hideGame();
   showSetup();
 }
-
-function generatePlayerSetupElement (index) {
-  const container = document.createElement('div');
-  container.classList.add('player-setup');
-
-  container.appendChild(createNameElement(index));
-  container.appendChild(createControlsElement('forward'));
-  container.appendChild(createControlsElement('backward'));
-  container.appendChild(createControlsElement('left'));
-  container.appendChild(createControlsElement('right'));
-  container.appendChild(createControlsElement('shoot'));
-
-  return container;
-
-  function createNameElement (index) {
-    const container = document.createElement('div');
-    const nameInput = document.createElement('input');
-    const text = document.createTextNode('username');
-    nameInput.addEventListener('input', e => {
-      players[index]['name'] = e.target.value;
-    });
-    container.classList.add('player-setup-row');
-    nameInput.setAttribute('type', 'text');
-    nameInput.setAttribute('value', `player${index}`);
-    container.appendChild(text);
-    container.appendChild(nameInput);
-    return container;
-  }
-
-  function createControlsElement (type) {
-    const control = document.createElement('div');
-    const btn = document.createElement('button');
-    const text = document.createTextNode(type);
-    btn.addEventListener('click', e => {
-      btn.addEventListener('keyup', e => {
-        btn.innerHTML = e.code;
-        players[index]['controls'][type] = e.code;
-      })
-    });
-    btn.innerHTML = 'Choose button...';
-    control.classList.add('player-setup-row');
-    control.appendChild(text);
-    control.appendChild(btn);
-    return control;
-  }
-}
-
 
 function showSetup () {
   getById('setup-screen').style.display = 'flex';
