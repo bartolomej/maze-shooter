@@ -1,8 +1,9 @@
-import Game from "./game";
-import { BackgroundAnimation, PlayerSetup, ModalWindow } from "./utils";
+import Game from "./game/index";
+import BackgroundAnimation from './background';
+import Alert from "./alert";
+import { PlayerSetup } from "./setup";
+import { getById, hide, show } from "./utils";
 
-
-const getById = id => document.getElementById(id);
 
 window.players = [];
 
@@ -12,6 +13,8 @@ getById('online-mode-btn').addEventListener('click', onlineModeHandler);
 getById('play-game-btn').addEventListener('click', playHandler);
 getById('back-to-setup-btn').addEventListener('click', backToSetupHandler);
 getById('exit-game-btn').addEventListener('click', exitHandler);
+getById('go-to-about-screen-btn').addEventListener('click', goToAboutHandler);
+getById('go-to-home-screen-btn').addEventListener('click', goToHomeHandler);
 
 
 (function () {
@@ -21,13 +24,13 @@ getById('exit-game-btn').addEventListener('click', exitHandler);
 })();
 
 function onlineModeHandler (e) {
-  window.modal = new ModalWindow('Online mode not available yet!');
+  window.modal = new Alert('Online mode not available yet!');
   window.modal.show();
 }
 
 function localModeHandler () {
-  hideSetup();
-  showSettings();
+  hide('setup-screen');
+  show('settings-screen');
 
   // create default controls for 2 players
   let playersContainer = document.getElementById('players');
@@ -89,8 +92,8 @@ function playHandler () {
     player.destroy();
   }
 
-  hideSettings();
-  showGame();
+  hide('settings-screen');
+  show('game-screen');
 
   window.game = new Game({
     container: getById('game-container'),
@@ -112,36 +115,22 @@ function backToSetupHandler () {
   window.players = [];
   document.getElementById('players').innerHTML = '';
 
-  hideSettings();
-  showSetup();
+  hide('settings-screen');
+  show('setup-screen');
 }
 
 function exitHandler () {
   window.game.destroy();
-  hideGame();
-  showSetup();
+  hide('game-screen');
+  show('setup-screen');
 }
 
-function showSetup () {
-  getById('setup-screen').style.display = 'flex';
+function goToAboutHandler () {
+  hide('setup-screen');
+  show('about-screen');
 }
 
-function hideSetup () {
-  getById('setup-screen').style.display = 'none';
-}
-
-function showSettings () {
-  getById('settings-screen').style.display = 'flex';
-}
-
-function hideSettings () {
-  getById('settings-screen').style.display = 'none';
-}
-
-function showGame () {
-  getById('game-screen').style.display = 'flex';
-}
-
-function hideGame () {
-  getById('game-screen').style.display = 'none';
+function goToHomeHandler () {
+  hide('about-screen');
+  show('setup-screen');
 }

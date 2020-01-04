@@ -8,7 +8,25 @@
 </head>
 <body>
 
+<div id="about-screen" class="full-screen" style="display: none;">
+    <button class="top-left" id="go-to-home-screen-btn">About</button>
+    <h1>About this project</h1>
+    <div>
+        <p>
+            This is an experimental browser game developed for a school project.
+            I'm planning to extend its functionality to support online multiplayer mode.
+        </p>
+        <p>
+            Contributions are also welcome <a href="https://github.com/bartolomej/maze-shooter">here</a>.
+        </p>
+        <p>
+            Author: <a href="https://github.com/bartolomej">Bartolomej Kozorog</a>
+        </p>
+    </div>
+</div>
+
 <div id="setup-screen" class="full-screen">
+    <button class="top-left" id="go-to-about-screen-btn">About</button>
     <h1>Maze Shooter</h1>
     <div id="game-modes">
         <button id="local-mode-btn">Local</button>
@@ -17,6 +35,7 @@
 </div>
 
 <div id="settings-screen" class="full-screen" style="display: none;">
+    <button id="back-to-setup-btn" class="top-left">Back</button>
     <div>
         <div id="manipulate-players">
             <h1>Players</h1>
@@ -27,14 +46,13 @@
         </div>
         <div id="players"></div>
         <div>
-            <button id="back-to-setup-btn">Back</button>
             <button id="play-game-btn">Play</button>
         </div>
     </div>
 </div>
 
 <div id="game-screen" class="full-screen" style="display: none">
-    <button id="exit-game-btn">EXIT</button>
+    <button id="exit-game-btn" class="top-left">EXIT</button>
     <div id="game-container"></div>
 </div>
 
