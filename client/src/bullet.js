@@ -1,43 +1,40 @@
 import { Graphics } from 'pixi.js';
 
+// TODO: fix wall edge cases bounce
 
 export default class Bullet {
 
-  // TODO: CHANGE TO difference in speed for x/y instead of rotation angle
-
   constructor (x, y, angle) {
     this.radius = 5;
-    this.rotation = angle;
     this.position = { x, y };
     this.velocityFactor = 2;
+    this.velocity = {
+      x: Math.sin(angle),
+      y: Math.cos(angle)
+    };
     this.graphics = null;
   }
 
   bounceUp() {
-    this.rotation += Math.PI - 2 * this.rotation;
+    this.velocity.y *= -1;
   }
 
   bounceDown() {
-    this.rotation += Math.PI - 2 * this.rotation;
+    this.velocity.y *= -1;
   }
 
   bounceLeft() {
-    let a = (Math.PI / 2) + this.rotation;
-    this.rotation += Math.PI + a;
+    this.velocity.x *= -1;
   }
 
   bounceRight() {
-    let a = (Math.PI / 2) + this.rotation;
-    this.rotation += Math.PI + a;
+    this.velocity.x *= -1;
   }
 
   update () {
-    // calculate bullet velocity vector
-    const dx = this.velocityFactor * Math.sin(this.rotation);
-    const dy = this.velocityFactor * Math.cos(this.rotation);
-
-    this.position.x += dx;
-    this.position.y -= dy;
+    // calculate position
+    this.position.x += this.velocity.x * this.velocityFactor;
+    this.position.y -= this.velocity.y * this.velocityFactor;
 
     // updates view elements
     // this.graphics.rotation = this.rotation;
@@ -48,13 +45,12 @@ export default class Bullet {
   }
 
   draw (parent) {
-    const { x, y } = this.position;
     if (this.graphics == null) {
       this.graphics = new Graphics();
     }
 
-    this.graphics.x = x;
-    this.graphics.y = y;
+    this.graphics.x = this.position.x;
+    this.graphics.y = this.position.y;
     this.graphics.clear();
     this.graphics.lineStyle(0);
     this.graphics.beginFill(0xDE3249, 1);

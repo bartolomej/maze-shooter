@@ -6,6 +6,7 @@
   "private": true,
   "scripts": {
     "watch": "webpack --watch",
+    "deploy": "npm run build && node deploy.js",
     "build": "webpack",
     "start": "npm run serve && npm run watch",
     "serve": "webpack-dev-server --open",
@@ -30,6 +31,8 @@
     "webpack-dev-server": "^3.9.0"
   },
   "dependencies": {
-    "pixi.js": "^5.2.0"
+    "gh-pages": "^2.1.1",
+    "pixi.js": "^5.2.0",
+    "uuid": "^3.3.3"
   }
 }

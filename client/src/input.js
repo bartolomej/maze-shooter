@@ -1,11 +1,3 @@
-export const keys = {
-  LEFT: 'ArrowLeft',
-  RIGHT: 'ArrowRight',
-  UP: 'ArrowUp',
-  DOWN: 'ArrowDown',
-  SPACE: 'Space'
-};
-
 export class KeyHandler {
 
   constructor (value) {

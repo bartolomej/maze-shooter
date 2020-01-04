@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Maze shooter</title>
+    <link rel="stylesheet" href="style.css">
     <style>
         * {
             margin: 0;
@@ -11,6 +12,32 @@
     </style>
 </head>
 <body>
+
+<div id="setup-screen" class="full-screen">
+    <div id="game-modes">
+        <button id="local-mode-btn">Local</button>
+        <button id="online-mode-btn">Online</button>
+    </div>
+</div>
+
+<div id="settings-screen" class="full-screen" style="display: none;">
+    <div>
+        <div id="manipulate-players">
+            <span>Players</span>
+            <div>
+                <button id="remove-player-btn">-</button>
+                <button id="add-player-btn">+</button>
+            </div>
+        </div>
+        <div id="players"></div>
+        <button id="play-game-btn">Play</button>
+    </div>
+</div>
+
+<div id="game-screen" class="full-screen" style="display: none">
+    <button id="exit-game-btn">EXIT</button>
+    <div id="game-container"></div>
+</div>
 
 <script src="./bundle.js"></script>
 </body>

@@ -1,11 +1,13 @@
 import { Container, Graphics } from 'pixi.js';
-import { KeyHandler, keys } from "./input";
+import { KeyHandler } from "./input";
 import Bullet from "./bullet";
+import uuid from 'uuid/v4';
 
 export default class Player {
 
-  constructor (uid, position, size, initialDirection = 'RIGHT') {
-    this.uid = uid;
+  constructor ({uid, name, position, keys, size, initialDirection = 'RIGHT'}) {
+    this.uid = uid ? uid : uuid();
+    this.name = name;
     this.size = size;
     this.tick = 0;
     this.position = position && position.x && position.y ? position : { x: 20, y: 20 };
@@ -20,11 +22,11 @@ export default class Player {
 
     // support keys as params in the future (for multiple local players)
     this.keyboard = {
-      left: new KeyHandler(keys.LEFT),
-      right: new KeyHandler(keys.RIGHT),
-      up: new KeyHandler(keys.UP),
-      down: new KeyHandler(keys.DOWN),
-      shoot: new KeyHandler(keys.SPACE)
+      left: new KeyHandler(keys.left),
+      right: new KeyHandler(keys.right),
+      forward: new KeyHandler(keys.forward),
+      backward: new KeyHandler(keys.backward),
+      shoot: new KeyHandler(keys.shoot)
     };
   }
 
@@ -45,7 +47,7 @@ export default class Player {
   }
 
   move () {
-    const { left, right, up, down } = this.keyboard;
+    const { left, right, forward, backward } = this.keyboard;
 
     if (right.isDown) {
       this.rotation += this.rotationFactor;
@@ -57,10 +59,10 @@ export default class Player {
     const dx = this.velocityFactor * Math.sin(this.rotation);
     const dy = this.velocityFactor * Math.cos(this.rotation);
 
-    if (up.isDown) {
+    if (forward.isDown) {
       this.position.x += dx;
       this.position.y -= dy;
-    } else if (down.isDown) {
+    } else if (backward.isDown) {
       this.position.x -= dx;
       this.position.y += dy;
     }
