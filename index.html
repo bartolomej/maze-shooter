@@ -2,15 +2,59 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-        }
-    </style>
+    <title>Maze shooter</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="icon.png">
 </head>
 <body>
+
+<div id="about-screen" class="full-screen" style="display: none;">
+    <button class="top-left" id="go-to-home-screen-btn">About</button>
+    <h1>About this project</h1>
+    <div>
+        <p>
+            This is an experimental browser game developed for a school project.
+            I'm planning to extend its functionality to support online multiplayer mode.
+        </p>
+        <p>
+            Contributions are also welcome <a href="https://github.com/bartolomej/maze-shooter">here</a>.
+        </p>
+        <p>
+            Author: <a href="https://github.com/bartolomej">Bartolomej Kozorog</a>
+        </p>
+    </div>
+</div>
+
+<div id="setup-screen" class="full-screen">
+    <button class="top-left" id="go-to-about-screen-btn">About</button>
+    <h1>Maze Shooter</h1>
+    <div id="game-modes">
+        <button id="local-mode-btn">Local</button>
+        <button id="online-mode-btn">Online</button>
+    </div>
+</div>
+
+<div id="settings-screen" class="full-screen" style="display: none;">
+    <button id="back-to-setup-btn" class="top-left">Back</button>
+    <div>
+        <div id="manipulate-players">
+            <h1>Players</h1>
+            <div>
+                <button id="remove-player-btn">-</button>
+                <button id="add-player-btn">+</button>
+            </div>
+        </div>
+        <div id="players"></div>
+        <div>
+            <button id="play-game-btn">Play</button>
+        </div>
+    </div>
+</div>
+
+<div id="game-screen" class="full-screen" style="display: none">
+    <button id="exit-game-btn" class="top-left">EXIT</button>
+    <div id="game-container"></div>
+</div>
 
 <script src="./bundle.js"></script>
 </body>
