@@ -1,0 +1,48 @@
+#setup-screen {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#setup-screen > div {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
+#setup-screen #manipulate-players {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    margin: 20px;
+}
+
+#setup-screen #manipulate-players button {
+    font-size: 20px;
+    padding: 5px 10px;
+    border-radius: 10px;
+    background-color: palevioletred;
+}
+
+#players {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.player-setup {
+    display: flex;
+    flex-direction: column;
+    margin: 20px;
+    border: 2px solid black;
+    padding: 10px;
+    border-radius: 20px;
+    background: white;
+}
+
+.player-setup-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}

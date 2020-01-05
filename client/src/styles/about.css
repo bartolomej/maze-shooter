@@ -1,0 +1,11 @@
+#about-screen {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+#about-screen div {
+    width: 40%;
+    margin: 20px auto;
+}

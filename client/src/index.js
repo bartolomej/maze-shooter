@@ -9,12 +9,11 @@ window.players = [];
 
 // register buttons click event listeners
 getById('local-mode-btn').addEventListener('click', localModeHandler);
-getById('online-mode-btn').addEventListener('click', onlineModeHandler);
 getById('play-game-btn').addEventListener('click', playHandler);
 getById('back-to-setup-btn').addEventListener('click', backToSetupHandler);
 getById('exit-game-btn').addEventListener('click', exitHandler);
-getById('go-to-about-screen-btn').addEventListener('click', goToAboutHandler);
-getById('go-to-home-screen-btn').addEventListener('click', goToHomeHandler);
+getById('go-to-about-btn').addEventListener('click', goToAboutHandler);
+getById('go-to-landing-btn').addEventListener('click', goToLandingHandler);
 
 
 (function () {
@@ -29,8 +28,8 @@ function onlineModeHandler (e) {
 }
 
 function localModeHandler () {
-  hide('setup-screen');
-  show('settings-screen');
+  hide('landing-screen');
+  show('setup-screen');
 
   // create default controls for 2 players
   let playersContainer = document.getElementById('players');
@@ -92,7 +91,7 @@ function playHandler () {
     player.destroy();
   }
 
-  hide('settings-screen');
+  hide('setup-screen');
   show('game-screen');
 
   window.game = new Game({
@@ -115,22 +114,22 @@ function backToSetupHandler () {
   window.players = [];
   document.getElementById('players').innerHTML = '';
 
-  hide('settings-screen');
-  show('setup-screen');
+  hide('setup-screen');
+  show('landing-screen');
 }
 
 function exitHandler () {
   window.game.destroy();
   hide('game-screen');
-  show('setup-screen');
+  show('landing-screen');
 }
 
 function goToAboutHandler () {
-  hide('setup-screen');
+  hide('landing-screen');
   show('about-screen');
 }
 
-function goToHomeHandler () {
+function goToLandingHandler () {
   hide('about-screen');
-  show('setup-screen');
+  show('landing-screen');
 }
