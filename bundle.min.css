@@ -1,6 +1,4 @@
-@import url('https://fonts.googleapis.com/css?family=Prompt:400,500,700,900&display=swap');
-
-/** GLOBAL STYLES **/
+@import url(https://fonts.googleapis.com/css?family=Prompt:400,500,700,900&display=swap);/** GLOBAL STYLES **/
 
 * {
     margin: 0;
@@ -33,11 +31,38 @@ button {
     position: absolute;
     top: 10px;
     right: 10px;
+}#game-screen {
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-/** ABOUT SCREEN STYLES **/
+#scoreboard-container {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
 
-#about-screen {
+.maze {
+    transition: opacity 2s ease;
+    opacity: 0;
+}
+
+.maze-in {
+    opacity: 1;
+}
+
+.maze-out {
+    opacity: 0;
+}
+
+.player-score {
+
+}
+
+.score-row {
+
+}#about-screen {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -47,18 +72,14 @@ button {
 #about-screen div {
     width: 40%;
     margin: 20px auto;
-}
-
-/** SETUP SCREEN STYLES **/
-
-#setup-screen {
+}#landing-screen {
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
 }
 
-#setup-screen button {
+#landing-screen button {
     font-weight: bold;
     font-size: 20px;
 }
@@ -68,30 +89,19 @@ button {
     border-radius: 10px;
     margin: 10px;
     border: 2px solid black;
-}
-
-#game-screen {
+}#setup-screen {
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-
-/** SETTINGS SCREEN STYLES **/
-
-#settings-screen {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-#settings-screen > div {
+#setup-screen > div {
     display: flex;
     align-items: center;
     flex-direction: column;
 }
 
-#settings-screen #manipulate-players {
+#setup-screen #manipulate-players {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -99,7 +109,7 @@ button {
     margin: 20px;
 }
 
-#settings-screen #manipulate-players button {
+#setup-screen #manipulate-players button {
     font-size: 20px;
     padding: 5px 10px;
     border-radius: 10px;
@@ -127,3 +137,4 @@ button {
     flex-direction: row;
     justify-content: space-between;
 }
+/*# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IiIsImZpbGUiOiJidW5kbGUubWluLmNzcyIsInNvdXJjZVJvb3QiOiIifQ==*/
