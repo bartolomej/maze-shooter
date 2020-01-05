@@ -10,8 +10,7 @@ export default class Player {
     this.name = name;
     this.size = size;
     this.color = color;
-    this.tick = 0;
-    this.collisions = [];
+    this.lastShootingTime = 0;
     this.position = position && position.x && position.y ? position : { x: 20, y: 20 };
     this.rotation = this._getDegreeOrientation(initialDirection);
     this.bullets = [];
@@ -20,7 +19,7 @@ export default class Player {
     // player coefficients
     this.velocityFactor = 1;
     this.rotationFactor = 0.06;
-    this.shootingFactor = 20;
+    this.shootingRate = 200;
 
     this.keyboard = {
       left: new KeyHandler(keys.left),
@@ -47,7 +46,7 @@ export default class Player {
     }
   }
 
-  move () {
+  move (collisions) {
     const { left, right, forward, backward } = this.keyboard;
 
     if (right.isDown) {
@@ -57,8 +56,21 @@ export default class Player {
     }
 
     // calculate player velocity vector
-    const dx = this.velocityFactor * Math.sin(this.rotation);
-    const dy = this.velocityFactor * Math.cos(this.rotation);
+    let dx = this.velocityFactor * Math.sin(this.rotation);
+    let dy = this.velocityFactor * Math.cos(this.rotation);
+
+    if (collisions.includes('TOP')) {
+      if (dy > 0) dy = 0;
+    }
+    if (collisions.includes('BOTTOM')) {
+      if (dy < 0) dy = 0;
+    }
+    if (collisions.includes('LEFT')) {
+      if (dx < 0) dx = 0;
+    }
+    if (collisions.includes('RIGHT')) {
+      if (dx > 0) dx = 0;
+    }
 
     if (forward.isDown) {
       this.position.x += dx;
@@ -69,14 +81,14 @@ export default class Player {
     }
   }
 
-  update () {
+  update (collisions) {
     // calculates player position
-    this.move();
+    this.move(collisions);
 
     // create new bullets on shoot
     if (
       this.keyboard.shoot.isDown &&
-      this.tick % this.shootingFactor === 0
+      this.lastShootingTime + this.shootingRate <= Date.now()
     ) {
       const bullet = new Bullet(
         this.position.x,
@@ -85,14 +97,13 @@ export default class Player {
       );
       bullet.draw(this.graphics.bullets);
       this.bullets.push(bullet);
+      this.lastShootingTime = Date.now()
     }
 
     // updates view elements
     this.graphics.player.rotation = this.rotation;
     this.graphics.player.x = this.position.x;
     this.graphics.player.y = this.position.y;
-
-    this.tick++;
   }
 
   draw (stage) {

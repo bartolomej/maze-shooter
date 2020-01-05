@@ -72,8 +72,7 @@ export default class Game {
     for (let uid in this.state['players']) {
       let player = this.state.players[uid];
       let wallHit = this.state.maze.checkBulletCollision(player);
-      if (wallHit) console.log(wallHit)
-      player.update();
+      player.update(wallHit);
       for (let bullet of player.bullets) {
         let bounce = this.state.maze.checkBulletCollision(bullet)[0];
         if (bounce === 'TOP' || bounce === 'BOTTOM') {

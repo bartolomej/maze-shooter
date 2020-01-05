@@ -97,7 +97,7 @@ function playHandler () {
 
   window.game = new Game({
     container: getById('game-container'),
-    mazeDimensions: [3, 3],
+    mazeDimensions: [10, 10],
     players: players
   });
 
