@@ -44,3 +44,21 @@ export class KeyHandler {
   }
 
 }
+
+
+/** DOM MANIPULATION HELPERS **/
+
+export function createDiv (id, classes = []) {
+  let div = document.createElement('div');
+  if (id) div.id = id;
+  for (let c of classes) div.classList.add(c);
+  return div;
+}
+
+export function createText (text, id, classes = []) {
+  let span = document.createElement('span');
+  if (id) span.id = id;
+  for (let c of classes) span.classList.add(c);
+  span.innerText = text;
+  return span;
+}

@@ -4,8 +4,9 @@ import { Graphics } from 'pixi.js';
 
 export default class Bullet {
 
-  constructor (x, y, angle) {
+  constructor (x, y, angle, destructionTime = 8) {
     this.size = 5;
+    this.isActive = true;
     this.position = { x, y };
     this.velocityFactor = 2;
     this.velocity = {
@@ -13,17 +14,27 @@ export default class Bullet {
       y: Math.cos(angle)
     };
     this.graphics = null;
+    // bullet self destruction time in seconds
+    setTimeout(this.destroy.bind(this), destructionTime * 1000)
   }
 
-  bounceY() {
-    this.velocity.y *= -1;
+  destroy () {
+    this.graphics.clear();
+    this.isActive = false;
   }
 
-  bounceX() {
-    this.velocity.x *= -1;
+  bounce (bounce) {
+    if (bounce === 'TOP' || bounce === 'BOTTOM') {
+      this.velocity.y *= -1;
+    }
+    if (bounce === 'LEFT' || bounce === 'RIGHT') {
+      this.velocity.x *= -1;
+    }
   }
 
   update () {
+    if (!this.isActive) return;
+
     // calculate position
     this.position.x += this.velocity.x * this.velocityFactor;
     this.position.y -= this.velocity.y * this.velocityFactor;

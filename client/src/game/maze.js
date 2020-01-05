@@ -247,10 +247,6 @@ function dist (dx, dy) {
   return Math.sqrt(dx ** 2 + dy ** 2);
 }
 
-function isBetween (value, target, diff) {
-  return value < target + diff && value > target - diff;
-}
-
 function random (max, min = 0) {
   return Math.floor(Math.random() * (max - min) + min);
 }

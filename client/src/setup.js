@@ -1,9 +1,10 @@
 import Color from "color";
-
+import uuid from 'uuid/v4';
 
 export class PlayerSetup {
 
   constructor (index, controls) {
+    this.uid = uuid();
     this.index = index;
     this.name = `player${index}`;
     this.color = PlayerSetup.getRandomColor();

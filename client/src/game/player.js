@@ -1,5 +1,5 @@
 import { Container, Graphics } from 'pixi.js';
-import { KeyHandler } from "./input";
+import { KeyHandler } from "./utils";
 import Bullet from "./bullet";
 import uuid from 'uuid/v4';
 
@@ -55,6 +55,7 @@ export default class Player {
       this.rotation -= this.rotationFactor;
     }
 
+    // TODO: compute absolute velocity (not relative to maze size)
     // calculate player velocity vector
     let dx = this.velocityFactor * Math.sin(this.rotation);
     let dy = this.velocityFactor * Math.cos(this.rotation);
@@ -90,11 +91,10 @@ export default class Player {
       this.keyboard.shoot.isDown &&
       this.lastShootingTime + this.shootingRate <= Date.now()
     ) {
-      const bullet = new Bullet(
-        this.position.x,
-        this.position.y,
-        this.rotation
-      );
+      // TODO: - Math.PI / 2 is a quick dirty fix because I don't want to deal with this shit now
+      const ballPosX = (Math.cos(this.rotation - Math.PI / 2) * (this.size + 6)) + this.position.x;
+      const ballPosY = (Math.sin(this.rotation - Math.PI / 2) * (this.size + 6)) + this.position.y;
+      const bullet = new Bullet(ballPosX, ballPosY, this.rotation);
       bullet.draw(this.graphics.bullets);
       this.bullets.push(bullet);
       this.lastShootingTime = Date.now()
