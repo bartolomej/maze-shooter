@@ -8,8 +8,8 @@
 </head>
 <body>
 
-<div id="about-screen" class="full-screen" style="display: none;">
-    <button class="top-left" id="go-to-landing-btn">About</button>
+<div id="about-screen" class="full-screen screen hide">
+    <button class="top-left nav-button" id="about-to-landing">Home</button>
     <h1>About this project</h1>
     <div>
         <p>
@@ -25,16 +25,16 @@
     </div>
 </div>
 
-<div id="landing-screen" class="full-screen">
-    <button class="top-left" id="go-to-about-btn">About</button>
+<div id="landing-screen" class="full-screen screen">
+    <button class="top-left nav-button" id="landing-to-about">About</button>
     <div id="game-modes">
         <h1>Maze Shooter</h1>
-        <button id="local-mode-btn">Play</button>
+        <button class="button" id="landing-to-setup">Play</button>
     </div>
 </div>
 
-<div id="setup-screen" class="full-screen" style="display: none;">
-    <button id="back-to-setup-btn" class="top-left">Back</button>
+<div id="setup-screen" class="full-screen screen hide">
+    <button id="setup-to-landing" class="top-left nav-button">Back</button>
     <div>
         <div id="manipulate-players">
             <h1>Players</h1>
@@ -45,13 +45,13 @@
         </div>
         <div id="players"></div>
         <div>
-            <button id="play-game-btn">Play</button>
+            <button class="button" id="setup-to-game">Play</button>
         </div>
     </div>
 </div>
 
-<div id="game-screen" class="full-screen" style="display: none">
-    <button id="exit-game-btn" class="top-left">EXIT</button>
+<div id="game-screen" class="full-screen screen hide">
+    <button id="game-to-landing" class="top-left nav-button">EXIT</button>
     <div id="game-container"></div>
 </div>
 
