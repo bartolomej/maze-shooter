@@ -1,6 +1,6 @@
 export default class BackgroundAnimation {
 
-  constructor (parent, balls = 100) {
+  constructor (balls = 100, parent) {
     this.balls = balls;
     this.animationFrame = null;
     this.parent = parent;
@@ -18,11 +18,16 @@ export default class BackgroundAnimation {
     canvas.style.left = '0';
     canvas.style.zIndex = '-1';
     canvas.style.filter = 'blur(2px)';
+    canvas.style.opacity = '0.2';
 
     this.ctx = canvas.getContext('2d');
     this.ctx.canvas.width = window.innerWidth;
     this.ctx.canvas.height = window.innerHeight;
-    document.body.appendChild(canvas);
+    if (this.parent) {
+      this.parent.appendChild(canvas);
+    } else {
+      document.body.appendChild(canvas);
+    }
 
     this.animationFrame = requestAnimationFrame(this.animate.bind(this));
 

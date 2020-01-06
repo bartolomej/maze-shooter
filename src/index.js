@@ -2,34 +2,29 @@ import Game from "./game/index";
 import BackgroundAnimation from './background';
 import Alert from "./alert";
 import { PlayerSetup } from "./setup";
-import { getById, hide, show } from "./utils";
+import { getById, hideScreen, showScreen } from "./utils";
 
 
 window.players = [];
 
 // register buttons click event listeners
-getById('local-mode-btn').addEventListener('click', localModeHandler);
-getById('play-game-btn').addEventListener('click', playHandler);
-getById('back-to-setup-btn').addEventListener('click', backToSetupHandler);
-getById('exit-game-btn').addEventListener('click', exitHandler);
-getById('go-to-about-btn').addEventListener('click', goToAboutHandler);
-getById('go-to-landing-btn').addEventListener('click', goToLandingHandler);
+getById('landing-to-setup').addEventListener('click', landingToSetup);
+getById('setup-to-game').addEventListener('click', playGame);
+getById('setup-to-landing').addEventListener('click', setupToLanding);
+getById('game-to-landing').addEventListener('click', gameToLanding);
+getById('landing-to-about').addEventListener('click', landingToAbout);
+getById('about-to-landing').addEventListener('click', aboutToLanding);
 
 
 (function () {
-  const container = getById('setup-screen');
-  window.setupScreenAnimation = new BackgroundAnimation(container, 50);
+  window.setupScreenAnimation = new BackgroundAnimation(6);
   setupScreenAnimation.animate();
+  setTimeout(() => showScreen('landing-screen'), 200);
 })();
 
-function onlineModeHandler (e) {
-  window.modal = new Alert('Online mode not available yet!');
-  window.modal.show();
-}
-
-function localModeHandler () {
-  hide('landing-screen');
-  show('setup-screen');
+async function landingToSetup () {
+  await hideScreen('landing-screen');
+  await showScreen('setup-screen');
 
   // create default controls for 2 players
   let playersContainer = document.getElementById('players');
@@ -79,7 +74,7 @@ function localModeHandler () {
   }
 }
 
-function playHandler () {
+async function playGame () {
   for (let player of players) {
     let invalidField = player.validate();
     if (invalidField) {
@@ -87,12 +82,12 @@ function playHandler () {
     }
   }
 
+  await hideScreen('setup-screen');
+  await showScreen('game-screen');
+
   for (let player of players) {
     player.destroy();
   }
-
-  hide('setup-screen');
-  show('game-screen');
 
   window.game = new Game({
     container: getById('game-container'),
@@ -105,7 +100,10 @@ function playHandler () {
   document.getElementById('players').innerHTML = '';
 }
 
-function backToSetupHandler () {
+async function setupToLanding () {
+  await hideScreen('setup-screen');
+  await showScreen('landing-screen');
+
   for (let player of players) {
     player.destroy();
   }
@@ -113,23 +111,20 @@ function backToSetupHandler () {
   // reset setup state
   window.players = [];
   document.getElementById('players').innerHTML = '';
-
-  hide('setup-screen');
-  show('landing-screen');
 }
 
-function exitHandler () {
+async function gameToLanding () {
+  await hideScreen('game-screen');
+  await showScreen('landing-screen');
   window.game.destroy();
-  hide('game-screen');
-  show('landing-screen');
 }
 
-function goToAboutHandler () {
-  hide('landing-screen');
-  show('about-screen');
+async function landingToAbout () {
+  await hideScreen('landing-screen');
+  await showScreen('about-screen');
 }
 
-function goToLandingHandler () {
-  hide('about-screen');
-  show('landing-screen');
+async function aboutToLanding () {
+  await hideScreen('about-screen');
+  await showScreen('landing-screen');
 }

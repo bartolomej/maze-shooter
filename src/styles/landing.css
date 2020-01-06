@@ -5,14 +5,17 @@
     flex-direction: column;
 }
 
-#landing-screen button {
-    font-weight: bold;
-    font-size: 20px;
+#game-modes {
+    display: flex;
+    flex-direction: column;
+}
+
+#game-modes h1 {
+    color: #e91d63;
+    font-size: 50px;
+    margin-bottom: 100px;
 }
 
 #game-modes button {
-    padding: 10px;
-    border-radius: 10px;
-    margin: 10px;
-    border: 2px solid black;
+    width: 50%;
 }
