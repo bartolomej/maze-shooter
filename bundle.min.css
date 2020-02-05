@@ -98,6 +98,9 @@ button {
     position: absolute;
     top: 10px;
     right: 10px;
+    padding: 10px;
+    border: 2px solid black;
+    border-radius: 10px;
 }
 
 .maze {
@@ -118,7 +121,7 @@ button {
 }
 
 .score-row {
-
+    color: grey;
 }#about-screen {
     display: flex;
     justify-content: center;
@@ -143,12 +146,13 @@ button {
 
 #game-modes h1 {
     color: #e91d63;
-    font-size: 50px;
-    margin-bottom: 100px;
+    font-size: 70px;
+    text-shadow: 3px 3px black;
 }
 
 #game-modes button {
     width: 50%;
+    margin-top: 70px;
 }#setup-screen {
     display: flex;
     justify-content: center;
@@ -197,4 +201,10 @@ button {
     flex-direction: row;
     justify-content: space-between;
 }
-/*# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IiIsImZpbGUiOiJidW5kbGUubWluLmNzcyIsInNvdXJjZVJvb3QiOiIifQ==*/
+
+.player-setup-row input[type=text] {
+    padding: 5px;
+    border-radius: 5px;
+    border: 1px solid grey;
+}
+/*# sourceMappingURL=bundle.min.css.map*/
