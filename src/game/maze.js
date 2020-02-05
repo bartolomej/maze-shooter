@@ -1,4 +1,4 @@
-import { Graphics, Container } from 'pixi.js';
+import { Container, Graphics } from 'pixi.js';
 
 
 export default class Maze {
@@ -46,17 +46,19 @@ export default class Maze {
     return this.maze[y][x];
   }
 
-  checkBulletCollision (bullet) {
-    const blockX = Math.floor(bullet.position.x / this.blockSize);
-    const blockY = Math.floor(bullet.position.y / this.blockSize);
+  getIntersection (bullet) {
+    //const blockX = Math.floor(bullet.position.x / this.blockSize);
+    //const blockY = Math.floor(bullet.position.y / this.blockSize);
 
-    if (
-      blockY < this.maze.length && blockX < this.maze[0].length &&
-      blockY >= 0 && blockX >= 0
-    ) {
-      const currentBlock = this.maze[blockY][blockX];
-      return currentBlock.checkWallCollision(bullet);
+    // check for all surrounding blocks
+    for (let y = 0; y < this.maze.length; y++) {
+      for (let x = 0; x < this.maze[0].length; x++) {
+        const currentBlock = this.maze[y][x];
+        const collisions = currentBlock.intersects(bullet);
+        if (collisions.length !== 0) return collisions;
+      }
     }
+    return [];
   }
 
   update () {
@@ -84,8 +86,9 @@ class Block {
     this.y = y;
     this.visited = false;
     this.graphics = null;
-    this.size = size;
-    this.wallWidth = 5;
+    this.width = size;
+    this.height = size;
+    this.thickness = 5;
     this.walls = {
       TOP: true,
       RIGHT: true,
@@ -94,92 +97,105 @@ class Block {
     };
   }
 
-  get positionX () {
-    return this.x * this.size;
+  get centerPosition () {
+    return {
+      x: (this.x * this.width) + (this.width / 2),
+      y: (this.y * this.height) + (this.height / 2)
+    }
   }
 
-  get positionY () {
-    return this.y * this.size;
+  get position () {
+    return {
+      x: this.x * this.width,
+      y: this.y * this.height
+    }
   }
 
-  checkWallCollision (bullet) {
+  intersects (circle) {
     const { TOP, RIGHT, BOTTOM, LEFT } = this.walls;
-    const { x, y } = bullet.position;
-    const r = bullet.size;
     const collisions = [];
 
-    if (
-      TOP &&
-      dist(0, y - this.positionY - this.wallWidth) <= r &&
-      y > this.positionY &&
-      x > this.positionX &&
-      x < this.positionX + this.size
-    ) {
-      collisions.push('TOP');
+    const topRect = {
+      width: this.width,
+      height: this.thickness,
+      position: {
+        x: this.position.x + this.width / 2,
+        y: this.position.y + this.thickness
+      }
+    };
+
+    const bottomRect = {
+      ...topRect,
+      position: {
+        x: this.position.x + this.width / 2,
+        y: this.position.y + this.height - this.thickness
+      }
+    };
+
+    const leftRect = {
+      width: this.thickness,
+      height: this.height,
+      position: {
+        x: this.position.x + this.thickness,
+        y: this.position.y + this.height / 2
+      }
+    };
+
+    const rightRect = {
+      ...leftRect,
+      position: {
+        x: this.position.x + this.width - this.thickness,
+        y: this.position.y + this.height / 2
+      }
+    };
+
+    let isTop = intersectsCircleRect(circle, topRect);
+    if (TOP && isTop) {
+      collisions.push(isTop);
     }
 
-    if (
-      BOTTOM &&
-      dist(0, y - (this.positionY + this.size - this.wallWidth)) <= r &&
-      y < this.positionY + this.size &&
-      x > this.positionX &&
-      x < this.positionX + this.size
-    ) {
-      collisions.push('BOTTOM');
+    let isBottom = intersectsCircleRect(circle, bottomRect);
+    if (BOTTOM && isBottom) {
+      collisions.push(isBottom);
     }
 
-    if (
-      LEFT &&
-      dist(x - this.positionX - this.wallWidth, 0) <= r &&
-      x > this.positionX &&
-      y > this.positionY &&
-      y < this.positionY + this.size
-    ) {
-      collisions.push('LEFT')
+    let isLeft = intersectsCircleRect(circle, leftRect);
+    if (LEFT && isLeft) {
+      collisions.push(isLeft);
     }
 
-    if (
-      RIGHT &&
-      dist(x - (this.positionX + this.size - this.wallWidth), 0) <= r &&
-      x < this.positionX + this.size &&
-      y > this.positionY &&
-      y < this.positionY + this.size
-    ) {
-      collisions.push('RIGHT');
+    let isRight = intersectsCircleRect(circle, rightRect);
+    if (RIGHT && isRight) {
+      collisions.push(isRight);
     }
-
-    // TODO: add collision detection for edge cases (wall edges)
 
     return collisions;
   }
 
   draw (parent) {
-    let width = this.size;
-    let height = this.size;
-
     let lines = new Graphics();
-    lines.lineStyle(this.wallWidth, 0x000000, 1);
+    lines.lineStyle(this.thickness, 0x000000, 1, 0);
 
-    const lineTo = (addX = 0, addY = 0) => {
-      lines.lineTo(this.x * width + addX, this.y * height + addY);
+    const line = (addX = 0, addY = 0) => {
+      lines.lineTo(this.position.x + addX, this.position.y + addY);
     };
-    const moveTo = (addX = 0, addY = 0) => {
-      lines.moveTo(this.x * width + addX, this.y * height + addY);
+    const move = (addX = 0, addY = 0) => {
+      lines.moveTo(this.position.x + addX, this.position.y + addY);
     };
 
-    moveTo(0, 0);
+    move(0, 0);
 
-    if (this.walls.TOP) lineTo(width, 0);
-    else moveTo(width, 0);
+    if (this.walls.TOP) line(this.width, 0);
+    else move(this.width, 0);
 
-    if (this.walls.RIGHT) lineTo(width, height);
-    else moveTo(width, height);
+    if (this.walls.RIGHT) line(this.width, this.height);
+    else move(this.width, this.height);
 
-    if (this.walls.BOTTOM) lineTo(0, height);
-    else moveTo(0, height);
+    if (this.walls.BOTTOM) line(0, this.height);
+    else move(0, this.height);
 
-    if (this.walls.LEFT) lineTo(0, 0);
-    else moveTo(0, 0);
+    if (this.walls.LEFT) line(0, 0);
+    else move(0, 0);
 
     this.graphics = lines;
 
@@ -243,8 +259,27 @@ class Block {
   }
 }
 
-function dist (dx, dy) {
-  return Math.sqrt(dx ** 2 + dy ** 2);
+function intersectsCircleRect (circle, rect) {
+  const distance = {
+    x: Math.abs(circle.position.x - rect.position.x),
+    y: Math.abs(circle.position.y - rect.position.y)
+  };
+
+  if (distance.x > (rect.width / 2 + circle.radius)) return false;
+  if (distance.y > (rect.height / 2 + circle.radius)) return false;
+
+  if (distance.x <= (rect.width / 2)) return 'Y';
+  if (distance.y <= (rect.height / 2)) return 'X';
+
+  const cornerDistance =
+    (distance.x - rect.width / 2) ^ 2 +
+    (distance.y - rect.height / 2) ^ 2;
+
+  if (cornerDistance <= (circle.radius ^ 2)) {
+    return 'C'
+  } else {
+    return false;
+  }
 }
 
 function random (max, min = 0) {

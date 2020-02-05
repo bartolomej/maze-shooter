@@ -22,7 +22,7 @@ export default class Game {
     }
     this.blockSize = blockSize;
     // initial maze dimensions
-    this.mazeDimensions = [3,3];
+    this.mazeDimensions = [2,2];
     this.container = container;
     this.maze = {};
     this.players = {};
@@ -65,16 +65,12 @@ export default class Game {
     for (let p of this.playersConfigs) {
       const randomBlock = this.maze.getRandomBlock();
       const initialDirection = randomBlock.getRandomEmptyWall();
-      const position = {
-        x: (randomBlock.x * this.blockSize) + this.blockSize / 2,
-        y: (randomBlock.y * this.blockSize) + this.blockSize / 2
-      };
       let player = new Player({
         uid: p.uid,
         name: p.name,
-        position,
+        position: randomBlock.centerPosition,
         initialDirection,
-        size: this.blockSize / 4,
+        size: randomBlock.width / 4,
         keys: p.controls,
         color: p.getColor()
       });
@@ -163,8 +159,7 @@ export default class Game {
 
     for (let uid in this.players) {
       let player = this.players[uid];
-      let wallHit = this.maze.checkBulletCollision(player);
-      player.update(wallHit);
+      player.update(this.maze.getIntersection(player));
       for (let i = 0; i < player.bullets.length; i++) {
         let bullet = player.bullets[i];
         for (let uid in this.players) {
@@ -172,7 +167,7 @@ export default class Game {
           let dx = targetPlayer.position.x - bullet.position.x;
           let dy = targetPlayer.position.y - bullet.position.y;
           let d = dist(dx, dy);
-          if (d <= targetPlayer.size + bullet.size) {
+          if (d <= targetPlayer.radius + bullet.radius) {
             this.scoreBoard[player.uid].kills++;
             this.scoreBoard[targetPlayer.uid].hits++;
             this.gameStatus = GAME_STATUS.STOPPED;
@@ -182,9 +177,7 @@ export default class Game {
         if (!bullet.isActive) {
           player.bullets.splice(i, 1);
         }
-        let bounce = this.maze.checkBulletCollision(bullet)[0];
-        bullet.bounce(bounce);
-        bullet.update();
+        bullet.update(this.maze.getIntersection(bullet)[0]);
       }
     }
   };

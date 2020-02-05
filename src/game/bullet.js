@@ -5,7 +5,7 @@ import { Graphics } from 'pixi.js';
 export default class Bullet {
 
   constructor (x, y, angle, destructionTime = 8) {
-    this.size = 5;
+    this.radius = 5;
     this.isActive = true;
     this.position = { x, y };
     this.velocityFactor = 2;
@@ -27,13 +27,6 @@ export default class Bullet {
     if (bounce === 'TOP' || bounce === 'BOTTOM') {
       this.velocity.y *= -1;
     }
-    if (bounce === 'LEFT' || bounce === 'RIGHT') {
-      this.velocity.x *= -1;
-    }
-  }
-
-  update () {
-    if (!this.isActive) return;
 
     // calculate position
     this.position.x += this.velocity.x * this.velocityFactor;
@@ -57,7 +50,7 @@ export default class Bullet {
     this.graphics.clear();
     this.graphics.lineStyle(0);
     this.graphics.beginFill(0xDE3249, 1);
-    this.graphics.drawCircle(0, 0, this.size);
+    this.graphics.drawCircle(0, 0, this.radius);
     this.graphics.endFill();
 
     if (parent) {

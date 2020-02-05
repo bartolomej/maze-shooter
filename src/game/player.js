@@ -3,12 +3,13 @@ import { KeyHandler } from "./utils";
 import Bullet from "./bullet";
 import uuid from 'uuid/v4';
 
+
 export default class Player {
 
-  constructor ({uid, name, position, keys, size, initialDirection = 'RIGHT', color}) {
+  constructor ({ uid, name, position, keys, size, initialDirection = 'RIGHT', color }) {
     this.uid = uid ? uid : uuid();
     this.name = name;
-    this.size = size;
+    this.radius = size;
     this.color = color;
     this.lastShootingTime = 0;
     this.position = position && position.x && position.y ? position : { x: 20, y: 20 };
@@ -46,7 +47,8 @@ export default class Player {
     }
   }
 
-  move (collisions) {
+  update (collisions) {
+    // calculates player position
     const { left, right, forward, backward } = this.keyboard;
 
     if (right.isDown) {
@@ -55,23 +57,29 @@ export default class Player {
       this.rotation -= this.rotationFactor;
     }
 
-    // TODO: compute absolute velocity (not relative to maze size)
-    // calculate player velocity vector
     let dx = this.velocityFactor * Math.sin(this.rotation);
     let dy = this.velocityFactor * Math.cos(this.rotation);
 
-    if (collisions.includes('TOP')) {
-      if (dy > 0) dy = 0;
+    let deltaPosX = this.position.x - this.position0.x;
+    let deltaPosY = this.position.y - this.position0.y;
+
+    if (collisions.includes('X')) {
+      if (deltaPosX > 0 && dx > 0) dx = 0;
+      if (deltaPosX < 0 && dx < 0) dx = 0;
     }
-    if (collisions.includes('BOTTOM')) {
-      if (dy < 0) dy = 0;
+
+    if (collisions.includes('Y')) {
+      if (deltaPosY > 0 && dy > 0) dy = -dy;
+      if (deltaPosY < 0 && dy < 0) dy = -dy;
+      else dy = 0;
     }
-    if (collisions.includes('LEFT')) {
-      if (dx < 0) dx = 0;
+
+    if (collisions.includes('C')) {
+      dx = 0;
+      dy = 0;
     }
-    if (collisions.includes('RIGHT')) {
-      if (dx > 0) dx = 0;
-    }
+
+    this.position0 = Object.assign({}, this.position);
 
     if (forward.isDown) {
       this.position.x += dx;
@@ -80,11 +88,6 @@ export default class Player {
       this.position.x -= dx;
       this.position.y += dy;
     }
-  }
-
-  update (collisions) {
-    // calculates player position
-    this.move(collisions);
 
     // create new bullets on shoot
     if (
@@ -92,8 +95,8 @@ export default class Player {
       this.lastShootingTime + this.shootingRate <= Date.now()
     ) {
       // TODO: - Math.PI / 2 is a quick dirty fix because I don't want to deal with this shit now
-      const ballPosX = (Math.cos(this.rotation - Math.PI / 2) * (this.size + 6)) + this.position.x;
-      const ballPosY = (Math.sin(this.rotation - Math.PI / 2) * (this.size + 6)) + this.position.y;
+      const ballPosX = (Math.cos(this.rotation - Math.PI / 2) * (this.radius + 6)) + this.position.x;
+      const ballPosY = (Math.sin(this.rotation - Math.PI / 2) * (this.radius + 6)) + this.position.y;
       const bullet = new Bullet(ballPosX, ballPosY, this.rotation);
       bullet.draw(this.graphics.bullets);
       this.bullets.push(bullet);
@@ -109,20 +112,20 @@ export default class Player {
   draw (stage) {
     const body = new Graphics();
     body.beginFill(this.color);
-    body.drawCircle(0, 0, this.size);
+    body.drawCircle(0, 0, this.radius);
     body.endFill();
 
     const frontMark = new Graphics();
     frontMark.lineStyle(2, 0x0000);
     frontMark.beginFill(0x0000);
-    frontMark.drawCircle(0, 0, this.size / 3);
+    frontMark.drawCircle(0, 0, this.radius / 3);
     frontMark.endFill();
     frontMark.position.set(0, 0);
 
     const line = new Graphics();
-    line.lineStyle(this.size / 4, 0x0000);
+    line.lineStyle(this.radius / 4, 0x0000);
     line.moveTo(0, 0);
-    line.lineTo(0, -this.size);
+    line.lineTo(0, -this.radius);
     line.endFill();
     line.position.set(0, 0);
 

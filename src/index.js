@@ -16,10 +16,29 @@ getById('landing-to-about').addEventListener('click', landingToAbout);
 getById('about-to-landing').addEventListener('click', aboutToLanding);
 
 
-(function () {
-  window.setupScreenAnimation = new BackgroundAnimation(6);
-  setupScreenAnimation.animate();
-  setTimeout(() => showScreen('landing-screen'), 200);
+(async function () {
+  if (process.env.NODE_ENV) {
+    document.getElementById('landing-screen').style.display = 'none';
+    players.push(new PlayerSetup(players.length, {
+      forward: 'KeyW',
+      backward: 'KeyS',
+      left: 'KeyA',
+      right: 'KeyD',
+      shoot: 'Space'
+    }));
+    players.push(new PlayerSetup(players.length, {
+      forward: 'ArrowUp',
+      backward: 'ArrowDown',
+      left: 'ArrowLeft',
+      right: 'ArrowRight',
+      shoot: 'Enter'
+    }));
+    await playGame();
+  } else {
+    window.setupScreenAnimation = new BackgroundAnimation(6);
+    setupScreenAnimation.animate();
+    setTimeout(() => showScreen('landing-screen'), 200);
+  }
 })();
 
 async function landingToSetup () {
@@ -45,19 +64,19 @@ async function landingToSetup () {
 
   let lastEvent; // prevent double click event bug
   getById('add-player-btn').addEventListener('click', e => {
-    if (players.length < 4 && (lastEvent + 50) < e.timeStamp) {
-      addPlayer(getById('players'));
+    if (players.length < 4) {
+      if ((lastEvent + 50) < e.timeStamp) addPlayer(getById('players'));
     } else {
-      // TODO: display message
+      new Alert('Maximum number of players is 4 !').show();
     }
     lastEvent = e.timeStamp;
   });
 
   getById('remove-player-btn').addEventListener('click', e => {
-    if (players.length > 2 && (lastEvent + 50) < e.timeStamp) {
-      removePlayer(getById('players'))
+    if (players.length > 2) {
+      if ((lastEvent + 50) < e.timeStamp) removePlayer(getById('players'))
     } else {
-      // TODO: display message
+      new Alert('Minimum number of players is 2 !', e.target).show();
     }
     lastEvent = e.timeStamp;
   });
@@ -78,7 +97,8 @@ async function playGame () {
   for (let player of players) {
     let invalidField = player.validate();
     if (invalidField) {
-      alert(`${invalidField} key is not selected for ${player.name}`);
+      new Alert(`${invalidField} key is not selected for ${player.name}`).show();
+      return;
     }
   }
 

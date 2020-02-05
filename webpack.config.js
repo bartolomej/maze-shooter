@@ -2,6 +2,8 @@ const path = require('path');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
+const webpack = require('webpack');
+const Dotenv = require('dotenv-webpack');
 
 module.exports = {
   mode: 'development',
@@ -28,6 +30,11 @@ module.exports = {
     ],
   },
   plugins: [
+    new Dotenv(),
+    new webpack.EnvironmentPlugin({
+      NODE_ENV: 'production',
+      DEBUG: false
+    }),
     new CleanWebpackPlugin(),
     new ExtractTextPlugin("bundle.min.css"),
     new CopyPlugin([

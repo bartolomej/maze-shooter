@@ -1,31 +1,34 @@
 export default class Alert {
 
-  constructor (message, type, x, y, parent, selfDestroy = true) {
+  constructor (message, targetElement, parent = null) {
     this.message = message;
-    this.type = type;
     this.domElement = null;
-    this.position = { x, y };
+    this.target = targetElement;
     this.parent = parent;
-    this.selfDestroy = selfDestroy;
   }
 
-  show () {
+  show (type, selfDestroy = true) {
     const container = document.createElement('div');
     container.style.position = 'absolute';
-    if (!this.position.x || !this.position.y) {
+    container.style.padding = '20px';
+    container.style.border = '2px solid black';
+    container.style.borderRadius = '20px';
+
+    if (this.target) {
+      let rect = this.target.getBoundingClientRect();
+      container.style.top = (rect.top - 100) + 'px';
+      container.style.left = (rect.left) + 'px';
+    } else {
       container.style.top = '20px';
       container.style.right = '20px';
-    } else {
-      container.style.top = this.position.y + 'px';
-      container.style.left = this.position.x + 'px';
     }
     container.style.display = 'flex';
     container.style.flexDirection = 'column';
     container.style.alignItems = 'flex-end';
 
-    if (this.type) {
+    if (type) {
       const title = document.createElement('h3');
-      title.innerText = this.type;
+      title.innerText = type;
       container.appendChild(title);
     }
 
@@ -35,6 +38,7 @@ export default class Alert {
 
     container.appendChild(message);
 
+    console.log(container.getBoundingClientRect())
     this.domElement = container;
     if (this.parent) {
       this.parent.appendChild(container)
@@ -42,7 +46,7 @@ export default class Alert {
       document.body.appendChild(container);
     }
 
-    if (this.selfDestroy) {
+    if (selfDestroy) {
       setTimeout(() => {
         this.hide();
       }, 3000);
