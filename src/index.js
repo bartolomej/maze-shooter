@@ -17,7 +17,7 @@ getById('about-to-landing').addEventListener('click', aboutToLanding);
 
 
 (async function () {
-  if (process.env.NODE_ENV) {
+  if (process.env.NODE_ENV === 'development') {
     document.getElementById('landing-screen').style.display = 'none';
     players.push(new PlayerSetup(players.length, {
       forward: 'KeyW',
@@ -62,23 +62,20 @@ async function landingToSetup () {
     shoot: 'Enter'
   });
 
-  let lastEvent; // prevent double click event bug
   getById('add-player-btn').addEventListener('click', e => {
     if (players.length < 4) {
-      if ((lastEvent + 50) < e.timeStamp) addPlayer(getById('players'));
+      addPlayer(getById('players'));
     } else {
       new Alert('Maximum number of players is 4 !').show();
     }
-    lastEvent = e.timeStamp;
   });
 
   getById('remove-player-btn').addEventListener('click', e => {
     if (players.length > 2) {
-      if ((lastEvent + 50) < e.timeStamp) removePlayer(getById('players'))
+      removePlayer(getById('players'))
     } else {
       new Alert('Minimum number of players is 2 !', e.target).show();
     }
-    lastEvent = e.timeStamp;
   });
 
   function removePlayer (container) {
@@ -87,6 +84,7 @@ async function landingToSetup () {
   }
 
   function addPlayer (container, controls) {
+    console.log('adding player');
     const player = new PlayerSetup(players.length, controls);
     container.appendChild(player.domElement);
     players.push(player);

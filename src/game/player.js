@@ -6,20 +6,21 @@ import uuid from 'uuid/v4';
 
 export default class Player {
 
-  constructor ({ uid, name, position, keys, size, initialDirection = 'RIGHT', color }) {
+  constructor ({ uid, name, position, keys, size, initialDirection = 'RIGHT', color, velocityFactor = 1 }) {
     this.uid = uid ? uid : uuid();
     this.name = name;
     this.radius = size;
     this.color = color;
     this.lastShootingTime = 0;
     this.position = position && position.x && position.y ? position : { x: 20, y: 20 };
+    this.position0 = Object.assign({}, this.position);
     this.rotation = this._getDegreeOrientation(initialDirection);
     this.bullets = [];
     this.graphics = null;
 
     // player coefficients
-    this.velocityFactor = 1;
-    this.rotationFactor = 0.06;
+    this.velocityFactor = velocityFactor;
+    this.rotationFactor = 0.05 * velocityFactor;
     this.shootingRate = 200;
 
     this.keyboard = {
@@ -48,7 +49,6 @@ export default class Player {
   }
 
   update (collisions) {
-    // calculates player position
     const { left, right, forward, backward } = this.keyboard;
 
     if (right.isDown) {
@@ -57,44 +57,59 @@ export default class Player {
       this.rotation -= this.rotationFactor;
     }
 
-    let dx = this.velocityFactor * Math.sin(this.rotation);
-    let dy = this.velocityFactor * Math.cos(this.rotation);
+    let v = {
+      x: this.velocityFactor * Math.sin(this.rotation),
+      y: this.velocityFactor * Math.cos(this.rotation)
+    };
 
-    let deltaPosX = this.position.x - this.position0.x;
-    let deltaPosY = this.position.y - this.position0.y;
+    let vx, vy;
+
+    if (forward.isDown) {
+      vx = v.x;
+      vy = -v.y;
+    } else if (backward.isDown) {
+      vx = -v.x;
+      vy = v.y;
+    } else {
+      vx = 0;
+      vy = 0;
+    }
+
+    let dx = this.position.x - this.position0.x;
+    let dy = this.position.y - this.position0.y;
 
     if (collisions.includes('X')) {
-      if (deltaPosX > 0 && dx > 0) dx = 0;
-      if (deltaPosX < 0 && dx < 0) dx = 0;
+      if (dx > 0 && vx > 0) vx = 0;
+      if (dx < 0 && vx < 0) vx = 0;
     }
 
     if (collisions.includes('Y')) {
-      if (deltaPosY > 0 && dy > 0) dy = -dy;
-      if (deltaPosY < 0 && dy < 0) dy = -dy;
-      else dy = 0;
+      if (dy > 0 && vy > 0) vy = 0;
+      if (dy < 0 && vy < 0) vy = 0;
     }
 
     if (collisions.includes('C')) {
-      dx = 0;
-      dy = 0;
+      vx = -2*vx;
+      vy = -2*vy;
     }
 
-    this.position0 = Object.assign({}, this.position);
-
-    if (forward.isDown) {
-      this.position.x += dx;
-      this.position.y -= dy;
-    } else if (backward.isDown) {
-      this.position.x -= dx;
-      this.position.y += dy;
+    if (
+      !collisions.includes('C') &&
+      !collisions.includes('X') &&
+      !collisions.includes('Y')
+    ) {
+      this.position0 = Object.assign({}, this.position);
     }
+
+    this.position.x += vx;
+    this.position.y += vy;
 
     // create new bullets on shoot
     if (
       this.keyboard.shoot.isDown &&
       this.lastShootingTime + this.shootingRate <= Date.now()
     ) {
-      // TODO: - Math.PI / 2 is a quick dirty fix because I don't want to deal with this shit now
+      // - Math.PI / 2 is a quick dirty fix
       const ballPosX = (Math.cos(this.rotation - Math.PI / 2) * (this.radius + 6)) + this.position.x;
       const ballPosY = (Math.sin(this.rotation - Math.PI / 2) * (this.radius + 6)) + this.position.y;
       const bullet = new Bullet(ballPosX, ballPosY, this.rotation);
@@ -111,7 +126,7 @@ export default class Player {
 
   draw (stage) {
     const body = new Graphics();
-    body.beginFill(this.color);
+    body.beginFill(parseInt(this.color.substring(1, this.color.length), 16));
     body.drawCircle(0, 0, this.radius);
     body.endFill();
 

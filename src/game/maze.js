@@ -114,13 +114,14 @@ class Block {
   intersects (circle) {
     const { TOP, RIGHT, BOTTOM, LEFT } = this.walls;
     const collisions = [];
+    const lineAlignment = this.thickness / 4;
 
     const topRect = {
       width: this.width,
-      height: this.thickness,
+      height: this.thickness / 2,
       position: {
         x: this.position.x + this.width / 2,
-        y: this.position.y + this.thickness
+        y: this.position.y - lineAlignment
       }
     };
 
@@ -128,15 +129,15 @@ class Block {
       ...topRect,
       position: {
         x: this.position.x + this.width / 2,
-        y: this.position.y + this.height - this.thickness
+        y: this.position.y + this.height + lineAlignment
       }
     };
 
     const leftRect = {
-      width: this.thickness,
+      width: this.thickness / 2,
       height: this.height,
       position: {
-        x: this.position.x + this.thickness,
+        x: this.position.x - lineAlignment,
         y: this.position.y + this.height / 2
       }
     };
@@ -144,7 +145,7 @@ class Block {
     const rightRect = {
       ...leftRect,
       position: {
-        x: this.position.x + this.width - this.thickness,
+        x: this.position.x + this.width + lineAlignment,
         y: this.position.y + this.height / 2
       }
     };
@@ -174,7 +175,7 @@ class Block {
 
   draw (parent) {
     let lines = new Graphics();
-    lines.lineStyle(this.thickness, 0x000000, 1, 0);
+    lines.lineStyle(this.thickness, 0x000000, 1, 0.5);
 
     const line = (addX = 0, addY = 0) => {
       lines.lineTo(this.position.x + addX, this.position.y + addY);

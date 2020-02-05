@@ -21,8 +21,7 @@ export class PlayerSetup {
   }
 
   getColor () {
-    let color = this.color.hex();
-    return parseInt(color.substring(1, color.length), 16)
+    return this.color.hex();
   }
 
   static getRandomColor () {

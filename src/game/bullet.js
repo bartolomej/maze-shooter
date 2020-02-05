@@ -23,9 +23,16 @@ export default class Bullet {
     this.isActive = false;
   }
 
-  bounce (bounce) {
-    if (bounce === 'TOP' || bounce === 'BOTTOM') {
+  update (collisions) {
+    if (collisions.includes('Y')) {
       this.velocity.y *= -1;
+    }
+    if (collisions.includes('X')) {
+      this.velocity.x *= -1;
+    }
+    if (collisions.includes('C')) {
+      this.velocity.y *= -1;
+      this.velocity.x *= -1;
     }
 
     // calculate position

@@ -21,6 +21,7 @@ export default class Game {
       this.scoreBoard[p.uid] = { kills: 0, hits: 0 };
     }
     this.blockSize = blockSize;
+    this.velocityFactor = 1;
     // initial maze dimensions
     this.mazeDimensions = [2,2];
     this.container = container;
@@ -39,7 +40,6 @@ export default class Game {
   }
 
   initializeGame () {
-    // TODO: scale maze to fit screen
     this.app = new Application({
       width: this.mazeDimensions[0] * this.blockSize,
       height: this.mazeDimensions[1] * this.blockSize,
@@ -72,7 +72,8 @@ export default class Game {
         initialDirection,
         size: randomBlock.width / 4,
         keys: p.controls,
-        color: p.getColor()
+        color: p.getColor(),
+        velocityFactor: this.velocityFactor
       });
       player.draw(this.app.stage);
       this.players[player.uid] = player;
@@ -98,17 +99,23 @@ export default class Game {
         const score = this.scoreBoard[uid];
 
         const playerContainer = createDiv(`${uid}-score`, ['player-score']);
+        playerContainer.style.color = player.color;
 
         const name = createText(player.name);
+        name.style.fontWeight = 'bold';
 
         const killsWrapper = createDiv(null, ['score-row']);
         const killsLabel = createText('KILLS: ');
         const kills = createText(score.kills, `${uid}-kills`);
+        killsWrapper.style.fontSize = '12px';
+        killsWrapper.style.color = player.color;
         killsWrapper.append(killsLabel, kills);
 
         const hitsWrapper = createDiv(null, ['score-row']);
         const hitsLabel = createText('HITS: ');
         const hits = createText(score.hits, `${uid}-hits`);
+        hitsWrapper.style.fontSize = '12px';
+        hitsWrapper.style.color = player.color;
         hitsWrapper.append(hitsLabel, hits);
 
         playerContainer.append(name, killsWrapper, hitsWrapper);
@@ -133,16 +140,17 @@ export default class Game {
   async generateNextLevel () {
     return new Promise(resolve => {
       this.app.view.classList.remove('maze-in');
-      this.mazeDimensions = [
-        this.mazeDimensions[0] + 5,
-        this.mazeDimensions[1] + 5
-      ];
+
+      // extend maze if it doesn't overflow screen
+      const maxMazeSize = this.blockSize * this.mazeDimensions[0] + 200;
+      if (maxMazeSize < window.innerHeight && maxMazeSize < window.innerWidth) {
+        this.mazeDimensions = [this.mazeDimensions[0] + 1, this.mazeDimensions[1] + 1];
+        this.velocityFactor *= 0.8;
+      }
+
       this.destroy();
       this.initializeGame();
-      setTimeout(() => {
-        this.app.view.classList.add('maze-in');
-        return resolve();
-      }, 100);
+      setTimeout(() => resolve(this.app.view.classList.add('maze-in')), 100);
     });
   }
 
@@ -164,26 +172,31 @@ export default class Game {
         let bullet = player.bullets[i];
         for (let uid in this.players) {
           let targetPlayer = this.players[uid];
-          let dx = targetPlayer.position.x - bullet.position.x;
-          let dy = targetPlayer.position.y - bullet.position.y;
-          let d = dist(dx, dy);
-          if (d <= targetPlayer.radius + bullet.radius) {
-            this.scoreBoard[player.uid].kills++;
-            this.scoreBoard[targetPlayer.uid].hits++;
+          if (isHit(targetPlayer, bullet)) {
+            if (player.uid === targetPlayer.uid) {
+              this.scoreBoard[targetPlayer.uid].hits++;
+            } else {
+              this.scoreBoard[player.uid].kills++;
+              this.scoreBoard[targetPlayer.uid].hits++;
+            }
             this.gameStatus = GAME_STATUS.STOPPED;
+
             return;
           }
         }
         if (!bullet.isActive) {
           player.bullets.splice(i, 1);
         }
-        bullet.update(this.maze.getIntersection(bullet)[0]);
+        bullet.update(this.maze.getIntersection(bullet));
       }
     }
   };
 
 }
 
-function dist (dx, dy) {
-  return Math.sqrt(dx ** 2 + dy ** 2);
+function isHit (targetPlayer, bullet) {
+  let dx = targetPlayer.position.x - bullet.position.x;
+  let dy = targetPlayer.position.y - bullet.position.y;
+  let d = Math.sqrt(dx ** 2 + dy ** 2);
+  return d <= targetPlayer.radius + bullet.radius;
 }

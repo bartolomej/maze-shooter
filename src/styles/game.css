@@ -8,6 +8,9 @@
     position: absolute;
     top: 10px;
     right: 10px;
+    padding: 10px;
+    border: 2px solid black;
+    border-radius: 10px;
 }
 
 .maze {
@@ -28,5 +31,5 @@
 }
 
 .score-row {
-
+    color: grey;
 }
