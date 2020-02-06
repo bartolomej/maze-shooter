@@ -10,6 +10,7 @@ export class PlayerSetup {
     this.name = `player${index}`;
     this.color = PlayerSetup.getRandomColor();
     this.domElement = null;
+    this.parent = null;
     this.animationFrame = null;
     this.counter = 0;
     this.animationState = { x: 0, y: 0 };
@@ -19,8 +20,10 @@ export class PlayerSetup {
       : { forward: null, backward: null, left: null, right: null, shoot: null };
   }
 
-  async generate () {
+  async generate (parent) {
+    this.parent = parent;
     try {
+      this.generateLoading();
       this.name = await getRandomUsername();
     } catch (e) {}
     this.generateDom()
@@ -48,7 +51,11 @@ export class PlayerSetup {
     window.cancelAnimationFrame(this.animationFrame);
   }
 
-  generateDom (index) {
+  generateDom () {
+    if (this.domElement) {
+      this.parent.removeChild(this.domElement);
+    }
+
     const controls = this.controls;
     const container = document.createElement('div');
     container.classList.add('player-setup');
@@ -62,6 +69,20 @@ export class PlayerSetup {
     container.appendChild(this.createControlsElement('shoot', controls && controls.shoot));
 
     this.domElement = container;
+    this.parent.appendChild(this.domElement);
+  }
+
+  generateLoading () {
+    const container = document.createElement('div');
+    container.style.display = 'flex';
+    container.style.alignItems = 'center';
+    container.style.justifyContent = 'center';
+    container.style.width = '300px';
+    container.style.animation = 'playerFadeIn 0.5s';
+    container.innerHTML = '<div class="loading"><div></div><div></div></div>';
+
+    this.domElement = container;
+    this.parent.appendChild(this.domElement);
   }
 
   createGraphicElement () {
@@ -112,13 +133,13 @@ export class PlayerSetup {
   createNameElement () {
     const container = document.createElement('div');
     const nameInput = document.createElement('input');
-    const text = document.createTextNode('username');
+    const text = document.createTextNode('user');
     nameInput.addEventListener('input', e => {
       players[this.index]['name'] = e.target.value;
     });
     container.classList.add('player-setup-row');
     nameInput.setAttribute('type', 'text');
-    nameInput.setAttribute('value', `player${this.index}`);
+    nameInput.setAttribute('value', this.name);
     container.appendChild(text);
     container.appendChild(nameInput);
     return container;
@@ -145,7 +166,10 @@ export class PlayerSetup {
 }
 
 async function getRandomUsername () {
-  const response = await fetch('https://api.namefake.com/');
+  const response = await fetch(
+    'https://cors-anywhere.herokuapp.com/https://api.namefake.com/',
+    { 'Origin': 'https://www.bartolomej.github.io/maze-shooter' }
+  );
   const body = await response.json();
   return body.username;
 }

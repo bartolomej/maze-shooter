@@ -85,8 +85,7 @@ async function landingToSetup () {
 
   async function addPlayer (container, controls) {
     const player = new PlayerSetup(players.length, controls);
-    await player.generate();
-    container.appendChild(player.domElement);
+    await player.generate(container);
     players.push(player);
   }
 }
