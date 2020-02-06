@@ -18,6 +18,10 @@ button {
     border: none;
 }
 
+h1 {
+    color: #e91d63;
+}
+
 .full-screen {
     height: 100vh;
     width: 100vw;
@@ -37,16 +41,18 @@ button {
 
 .button {
     padding: 10px;
-    border-radius: 10px;
+    border-radius: 20px;
     border: 2px solid black;
     text-transform: uppercase;
     margin: 0 auto;
     font-weight: bold;
     font-size: 20px;
+    transition: 0.3s ease-in-out all;
 }
 
 .button:hover {
-    background: black;
+    border: 2px solid transparent;
+    background: #e91d63;
     color: white;
 }
 
@@ -54,10 +60,15 @@ button {
     font-weight: bold;
     font-size: 20px;
     transition:
+            color 0.3s ease-in-out,
             opacity 0.5s ease-in-out,
             transform 1s ease-in-out;
     transform: translateX(-100%);
     opacity: 0;
+}
+
+.nav-button:hover {
+    color: #e91d63;
 }
 
 .nav-button-in {

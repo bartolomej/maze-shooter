@@ -15,30 +15,51 @@
     flex-direction: column;
     align-items: center;
     justify-content: space-between;
-    margin: 20px;
 }
 
 #setup-screen #manipulate-players button {
     font-size: 20px;
+    font-weight: bold;
     padding: 5px 10px;
-    border-radius: 10px;
-    background-color: palevioletred;
+    transition: all 0.3s ease-in-out;
+    background: white;
+}
+
+#setup-screen #manipulate-players button:hover {
+    color: #e91d63;
+    transform: scale(1.5);
+}
+
+#manipulate-players h1 {
+    font-size: 2em;
 }
 
 #players {
+    margin: 50px 0;
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
+    justify-content: center;
 }
 
 .player-setup {
     display: flex;
+    transition: all 0.3s ease-in-out;
     flex-direction: column;
     margin: 20px;
-    border: 2px solid black;
     padding: 10px;
+    border: 2px solid black;
     border-radius: 20px;
     background: white;
+    -webkit-box-shadow: 10px 10px 4px -4px rgba(0,0,0,0.5);
+    -moz-box-shadow: 10px 10px 4px -4px rgba(0,0,0,0.5);
+    box-shadow: 10px 10px 4px -4px rgba(0,0,0,0.5);
+}
+
+.player-setup:hover {
+    -webkit-box-shadow: 10px 10px 20px 1px rgba(0,0,0,0.75);
+    -moz-box-shadow: 10px 10px 20px 1px rgba(0,0,0,0.75);
+    box-shadow: 10px 10px 20px 1px rgba(0,0,0,0.75);
 }
 
 .player-setup-row {
@@ -51,4 +72,5 @@
     padding: 5px;
     border-radius: 5px;
     border: 1px solid grey;
+    outline: none;
 }

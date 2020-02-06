@@ -10,7 +10,7 @@ export default class Alert {
   show (type, selfDestroy = true) {
     const container = document.createElement('div');
     container.style.position = 'absolute';
-    container.style.padding = '20px';
+    container.style.padding = '10px';
     container.style.border = '2px solid black';
     container.style.borderRadius = '20px';
 

@@ -112,7 +112,7 @@ export default class Player {
       // - Math.PI / 2 is a quick dirty fix
       const ballPosX = (Math.cos(this.rotation - Math.PI / 2) * (this.radius + 6)) + this.position.x;
       const ballPosY = (Math.sin(this.rotation - Math.PI / 2) * (this.radius + 6)) + this.position.y;
-      const bullet = new Bullet(ballPosX, ballPosY, this.rotation);
+      const bullet = new Bullet(ballPosX, ballPosY, this.rotation, this.velocityFactor);
       bullet.draw(this.graphics.bullets);
       this.bullets.push(bullet);
       this.lastShootingTime = Date.now()

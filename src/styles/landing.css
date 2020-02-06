@@ -11,12 +11,11 @@
 }
 
 #game-modes h1 {
-    color: #e91d63;
     font-size: 70px;
     text-shadow: 3px 3px black;
 }
 
 #game-modes button {
-    width: 50%;
+    padding: 10px 40px;
     margin-top: 70px;
 }

@@ -18,7 +18,7 @@ export default class Game {
     this.scoreBoard = {};
     // initialize scoreboard state
     for (let p of players) {
-      this.scoreBoard[p.uid] = { kills: 0, hits: 0 };
+      this.scoreBoard[p.uid] = 0;
     }
     this.blockSize = blockSize;
     this.velocityFactor = 1;
@@ -62,8 +62,17 @@ export default class Game {
     this.maze = maze;
 
     // initialize players on random positions
+    let positions = [];
     for (let p of this.playersConfigs) {
-      const randomBlock = this.maze.getRandomBlock();
+      // calculates random available position
+      let randomBlock = this.maze.getRandomBlock();
+      let stringId = randomBlock.x + '_' + randomBlock.y;
+      while (positions.includes(stringId)) {
+        randomBlock = this.maze.getRandomBlock();
+        stringId = randomBlock.x + '_' + randomBlock.y;
+      }
+      positions.push(stringId);
+
       const initialDirection = randomBlock.getRandomEmptyWall();
       let player = new Player({
         uid: p.uid,
@@ -103,22 +112,15 @@ export default class Game {
 
         const name = createText(player.name);
         name.style.fontWeight = 'bold';
+        name.style.opacity = '0.5';
 
-        const killsWrapper = createDiv(null, ['score-row']);
-        const killsLabel = createText('KILLS: ');
-        const kills = createText(score.kills, `${uid}-kills`);
-        killsWrapper.style.fontSize = '12px';
-        killsWrapper.style.color = player.color;
-        killsWrapper.append(killsLabel, kills);
+        const scoreText = createText(score, `${uid}-kills`);
+        scoreText.style.fontSize = '20px';
+        scoreText.style.fontWeight = 'bold';
+        scoreText.style.margin = '10px';
+        scoreText.style.color = player.color;
 
-        const hitsWrapper = createDiv(null, ['score-row']);
-        const hitsLabel = createText('HITS: ');
-        const hits = createText(score.hits, `${uid}-hits`);
-        hitsWrapper.style.fontSize = '12px';
-        hitsWrapper.style.color = player.color;
-        hitsWrapper.append(hitsLabel, hits);
-
-        playerContainer.append(name, killsWrapper, hitsWrapper);
+        playerContainer.append(name, scoreText);
         container.appendChild(playerContainer);
       }
 
@@ -126,13 +128,7 @@ export default class Game {
     }
 
     for (let uid in this.scoreBoard) {
-      const score = this.scoreBoard[uid];
-      document
-        .getElementById(`${uid}-kills`)
-        .innerText = score.kills;
-      document
-        .getElementById(`${uid}-hits`)
-        .innerText = score.hits;
+      document.getElementById(`${uid}-kills`).innerText = this.scoreBoard[uid];
     }
 
   }
@@ -174,10 +170,11 @@ export default class Game {
           let targetPlayer = this.players[uid];
           if (isHit(targetPlayer, bullet)) {
             if (player.uid === targetPlayer.uid) {
-              this.scoreBoard[targetPlayer.uid].hits++;
+              for (let p in this.scoreBoard) {
+                if (p !== player.uid) this.scoreBoard[p]++;
+              }
             } else {
-              this.scoreBoard[player.uid].kills++;
-              this.scoreBoard[targetPlayer.uid].hits++;
+              this.scoreBoard[player.uid]++;
             }
             this.gameStatus = GAME_STATUS.STOPPED;
 
@@ -186,8 +183,9 @@ export default class Game {
         }
         if (!bullet.isActive) {
           player.bullets.splice(i, 1);
+        } else {
+          bullet.update(this.maze.getIntersection(bullet));
         }
-        bullet.update(this.maze.getIntersection(bullet));
       }
     }
   };

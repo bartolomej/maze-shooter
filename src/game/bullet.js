@@ -4,18 +4,19 @@ import { Graphics } from 'pixi.js';
 
 export default class Bullet {
 
-  constructor (x, y, angle, destructionTime = 8) {
+  constructor (x, y, angle, velocityFactor = 2) {
     this.radius = 5;
     this.isActive = true;
     this.position = { x, y };
-    this.velocityFactor = 2;
+    this.velocityFactor = velocityFactor;
+    this.destructionTime = 8;
     this.velocity = {
       x: Math.sin(angle),
       y: Math.cos(angle)
     };
     this.graphics = null;
     // bullet self destruction time in seconds
-    setTimeout(this.destroy.bind(this), destructionTime * 1000)
+    setTimeout(this.destroy.bind(this), this.destructionTime * 1000)
   }
 
   destroy () {

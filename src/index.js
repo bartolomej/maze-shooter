@@ -17,7 +17,7 @@ getById('about-to-landing').addEventListener('click', aboutToLanding);
 
 
 (async function () {
-  if (process.env.NODE_ENV === 'development') {
+  if (false && process.env.NODE_ENV === 'development') {
     document.getElementById('landing-screen').style.display = 'none';
     players.push(new PlayerSetup(players.length, {
       forward: 'KeyW',
@@ -83,9 +83,9 @@ async function landingToSetup () {
     container.removeChild(player.domElement);
   }
 
-  function addPlayer (container, controls) {
-    console.log('adding player');
+  async function addPlayer (container, controls) {
     const player = new PlayerSetup(players.length, controls);
+    await player.generate();
     container.appendChild(player.domElement);
     players.push(player);
   }
